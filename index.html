@@ -4,833 +4,841 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ระบบคำนวณระบบน้ำในสวนทุเรียน</title>
-    <!-- เรียกใช้ฟอนต์ Sarabun คุณภาพสูงจาก Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Sarabun:wght@500;700;800&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
-        --primary: #10b981;
-        --primary-dark: #059669;
-        --primary-soft: #ecfdf5;
-        --accent: #0284c7;
-        --accent-soft: #f0f9ff;
-        --bg: #f1f5f9;
-        --surface: #ffffff;
-        --text-main: #0f172a;
-        --text-muted: #64748b;
-        --border: #e2e8f0;
-        --danger: #ef4444;
-        --danger-soft: #fef2f2;
-        --warning: #f59e0b;
-        --radius: 14px;
-        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+        --text: #000;
+        --border: #d1d5db;
+        --sec1: #d97706;
+        --sec2: #16a34a;
+        --sec3: #2563eb;
+        --sec4: #475569;
+        --sec-mist: #0284c7;
+        --sec5: #b45309;
       }
-
       * {
         box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Sarabun", -apple-system, BlinkMacSystemFont, sans-serif;
-        background: linear-gradient(180deg, #e2e8f0 0%, #f8fafc 100%);
-        color: var(--text-main);
         margin: 0;
-        padding: 24px 16px;
+        padding: 0;
+      }
+      body {
+        font-family: "Sarabun", sans-serif;
+        background: #f3f4f6;
+        color: var(--text);
+        line-height: 1.6;
+        padding: 30px 16px;
         display: flex;
         justify-content: center;
-        align-items: center;
-        min-height: 100vh;
       }
-
-      .card {
-        background: var(--surface);
-        padding: 36px 28px;
-        border-radius: 20px;
-        box-shadow: var(--shadow-md);
-        max-width: 640px;
+      .app-container {
+        max-width: 760px;
         width: 100%;
-        border: 1px solid rgba(255, 255, 255, 0.8);
       }
-
-      .header-title {
+      .app-header {
         text-align: center;
         margin-bottom: 24px;
       }
-
-      .header-title h2 {
-        color: var(--primary-dark);
-        font-size: 1.65rem;
-        font-weight: 700;
-        margin: 0;
-        letter-spacing: -0.02em;
-      }
-
-      /* กล่องพิกัดและสภาพอากาศ */
-      .weather-box {
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        border: 1px solid #bae6fd;
-        padding: 14px 18px;
-        border-radius: var(--radius);
-        margin-bottom: 24px;
-        font-size: 0.92rem;
-        line-height: 1.6;
-        color: #0369a1;
-        box-shadow: var(--shadow-sm);
-      }
-
-      /* จัดหมวดหมู่ฟอร์ม */
-      .form-section {
-        background: #f8fafc;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 18px 16px;
-        margin-bottom: 18px;
-      }
-
-      .form-section-title {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #334155;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .form-group {
-        margin-bottom: 14px;
-      }
-
-      .form-group:last-child {
-        margin-bottom: 0;
-      }
-
-      label {
-        display: block;
-        margin-bottom: 6px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: #334155;
-      }
-
-      .subtext {
-        color: var(--text-muted);
-        font-size: 0.8rem;
-        font-weight: 400;
-      }
-
-      .inline-inputs {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-      }
-
-      .inline-inputs input {
-        flex: 1;
-      }
-
-      .separator {
-        font-weight: bold;
-        color: #94a3b8;
-      }
-
-      input,
-      select {
-        width: 100%;
-        padding: 11px 14px;
-        border: 1.5px solid var(--border);
-        border-radius: 10px;
-        font-size: 0.95rem;
-        font-family: inherit;
-        background-color: #ffffff;
-        color: var(--text-main);
-        transition: all 0.2s ease;
-        outline: none;
-      }
-
-      input:focus,
-      select:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3.5px rgba(16, 185, 129, 0.15);
-        background-color: #fff;
-      }
-
-      /* กล่องตัวอย่างป้ายปั๊ม */
-      .pump-img-box {
-        background: #ffffff;
-        border: 1.5px dashed #cbd5e1;
-        border-radius: 12px;
-        padding: 14px;
-        margin-bottom: 14px;
-        text-align: center;
-      }
-
-      .pump-img-box img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-      }
-
-      .tip-badge {
+      .badge-tag {
         display: inline-block;
-        background: var(--accent-soft);
-        color: var(--accent);
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 0.82rem;
-        font-weight: 600;
-        margin-top: 8px;
-        border: 1px solid #bfdbfe;
-      }
-
-      /* ปุ่มกดประมวลผล */
-      button {
-        width: 100%;
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        color: white;
-        border: none;
-        padding: 15px 20px;
-        border-radius: 12px;
-        font-size: 1.05rem;
-        font-weight: 700;
-        cursor: pointer;
-        margin-top: 10px;
-        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
-        transition: all 0.2s ease;
-      }
-
-      button:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 18px rgba(16, 185, 129, 0.38);
-      }
-
-      button:active {
-        transform: translateY(0);
-      }
-
-      /* แดชบอร์ดสรุปผลลัพธ์ */
-      .result-card {
-        margin-top: 28px;
-        padding: 24px;
-        background: #ffffff;
-        border-radius: 16px;
-        border: 1.5px solid #a7f3d0;
-        box-shadow: 0 12px 30px rgba(16, 185, 129, 0.1);
-        display: none;
-      }
-
-      .result-card h3 {
-        margin: 0 0 16px 0;
-        color: #065f46;
-        font-size: 1.25rem;
-        font-weight: 700;
-        border-bottom: 2px solid #ecfdf5;
-        padding-bottom: 10px;
-      }
-
-      .summary-input-box {
-        background-color: #f8fafc;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 14px 16px;
-        margin-bottom: 20px;
-        font-size: 0.88rem;
-        line-height: 1.7;
-      }
-
-      .summary-input-box ul {
-        margin: 6px 0 0 0;
-        padding-left: 18px;
-        color: #475569;
-      }
-
-      /* Grid ตัวชี้วัดสำคัญ */
-      .metrics-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-bottom: 16px;
-      }
-
-      .metric-box {
-        background: #f8fafc;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 14px;
-      }
-
-      .metric-box.primary-theme {
-        background: var(--primary-soft);
-        border-color: #bbf7d0;
-      }
-
-      .metric-box.accent-theme {
-        background: var(--accent-soft);
-        border-color: #bae6fd;
-      }
-
-      .metric-label {
+        background: #000;
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 99px;
         font-size: 0.8rem;
-        font-weight: 600;
-        color: var(--text-muted);
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      h1 {
+        font-size: 1.8rem;
+        font-weight: 800;
         margin-bottom: 4px;
       }
 
-      .metric-val {
-        font-size: 1.35rem;
+      /* Card & Sections */
+      .main-card,
+      .weather-card {
+        background: #fff;
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+      .weather-card {
+        border-left: 6px solid var(--sec3);
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
         font-weight: 700;
-        color: var(--text-main);
+        font-size: 0.95rem;
       }
-
-      .metric-unit {
-        font-size: 0.85rem;
-        font-weight: 400;
-        color: var(--text-muted);
-      }
-
-      .result-detail-row {
-        background: #ffffff;
-        border: 1px solid var(--border);
+      .section-block {
+        background: #fff;
+        border: 2px solid var(--border);
         border-radius: 12px;
-        padding: 14px;
+        padding: 16px;
+        margin-bottom: 18px;
+      }
+      .block-sec-1 {
+        border-left: 6px solid var(--sec1);
+      }
+      .block-sec-2 {
+        border-left: 6px solid var(--sec2);
+      }
+      .block-sec-3 {
+        border-left: 6px solid var(--sec3);
+      }
+      .block-sec-4 {
+        border-left: 6px solid var(--sec4);
+      }
+      .block-sec-mist {
+        border-left: 6px solid var(--sec-mist);
+      }
+      .block-sec-5 {
+        border-left: 6px solid var(--sec5);
+      }
+      .section-header {
+        font-size: 1.05rem;
+        font-weight: 800;
+        padding-bottom: 6px;
+        border-bottom: 2px solid #e5e7eb;
         margin-bottom: 12px;
-        font-size: 0.9rem;
-        line-height: 1.6;
       }
 
-      .highlight-val {
+      /* Form Elements */
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 12px;
+      }
+      label {
+        font-weight: 800;
+        font-size: 0.92rem;
+        margin-bottom: 2px;
+      }
+      .subtext {
+        font-size: 0.82rem;
+        color: #374151;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .inline-inputs {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .inline-inputs input,
+      .inline-inputs select {
+        flex: 1;
+      }
+      input,
+      select {
+        width: 100%;
+        height: 44px;
+        padding: 0 12px;
+        font-size: 0.95rem;
         font-weight: 700;
-        color: var(--primary-dark);
-        font-size: 1.15rem;
+        font-family: inherit;
+        color: #000;
+        border: 2px solid #9ca3af;
+        border-radius: 8px;
+        outline: none;
+      }
+      input:focus,
+      select:focus {
+        border-color: #000;
       }
 
-      @media (max-width: 480px) {
-        .card {
-          padding: 24px 16px;
-        }
-        .metrics-grid {
-          grid-template-columns: 1fr;
-        }
+      .pump-img-container {
+        text-align: center;
+        border: 2px solid var(--sec4);
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 14px;
+      }
+      .pump-img-container img {
+        max-width: 100%;
+        max-height: 180px;
+        object-fit: contain;
+      }
+      .btn-calculate {
+        width: 100%;
+        height: 50px;
+        background: #000;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 800;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      .btn-calculate:hover {
+        background: #374151;
+      }
+
+      /* Result Dashboard */
+      .result-panel {
+        display: none;
+        margin-top: 24px;
+        border-top: 3px solid #e5e7eb;
+        padding-top: 20px;
+      }
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .kpi-card {
+        background: #fff;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 10px;
+        text-align: center;
+      }
+      .kpi-card.highlight {
+        border-color: #000;
+        background: #f8fafc;
+      }
+      .kpi-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+      .result-row-card {
+        background: #fff;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 10px;
+        font-size: 0.92rem;
+        font-weight: 600;
+      }
+      .code-tag {
+        background: #f3f4f6;
+        border: 1px solid #9ca3af;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-weight: 800;
+        display: inline-block;
+        margin-top: 2px;
+      }
+      .math-breakdown {
+        display: none;
+        margin-top: 14px;
+        background: #fff;
+        border: 2px solid #000;
+        border-radius: 10px;
+        padding: 16px;
+        font-size: 0.88rem;
+        line-height: 1.7;
       }
     </style>
   </head>
   <body>
-    <div class="card">
-      <div class="header-title">
-        <h2>ระบบคำนวณระบบน้ำในสวนทุเรียน</h2>
+    <div class="app-container">
+      <header class="app-header">
+        <div class="badge-tag">☀️ CLEAN HIGH-CONTRAST</div>
+        <h1>ระบบคำนวณระบบน้ำในสวนทุเรียน</h1>
+        <p>วิเคราะห์มิติแปลงสวน อัตราจ่ายน้ำ และขนาดปั๊มมาตรฐานหน้างานจริง</p>
+      </header>
+
+      <div class="weather-card" id="weatherDisplay">
+        <div>📍 <strong>ตำแหน่ง:</strong> กำลังตรวจจับพิกัด...</div>
+        <div>🌤️ <strong>สภาพอากาศ:</strong> กำลังโหลด...</div>
       </div>
 
-      <div class="weather-box" id="weatherDisplay">
-        📍 <strong>ตำแหน่งสวน:</strong> กำลังตรวจจับพิกัด...<br />
-        🌤️ <strong>สภาพอากาศ:</strong> กำลังโหลดสภาพอากาศ...
-      </div>
-
-      <form id="waterCalcForm">
-        <!-- หมวดที่ 1: ข้อมูลที่ดิน -->
-        <div class="form-section">
-          <div class="form-section-title">📐 ข้อมูลขนาดแปลงที่ดิน</div>
-          <div class="form-group">
-            <label for="rai">1. จำนวนพื้นที่ (ไร่)</label>
-            <input type="number" id="rai" step="1" min="1" placeholder="เช่น 20" required />
-          </div>
-
-          <div class="form-group">
-            <label>
-              2. ขนาดที่ดินของสวน (กว้าง × ยาว เป็นเมตร)
-              <span class="subtext">(สามารถเปิดวัดจาก Map ได้)</span>
-            </label>
-            <div class="inline-inputs">
-              <input type="number" id="gardenW" step="1" min="1" placeholder="กว้าง (ม.)" required />
-              <span class="separator">×</span>
-              <input type="number" id="gardenL" step="1" min="1" placeholder="ยาว (ม.)" required />
+      <div class="main-card">
+        <form id="waterCalcForm">
+          <!-- หมวด 1: ข้อมูลที่ดิน -->
+          <div class="section-block block-sec-1">
+            <div class="section-header">📐 1. ข้อมูลขนาดแปลงที่ดิน</div>
+            <div class="form-group">
+              <label>1. จำนวนพื้นที่ (ไร่)</label>
+              <input
+                type="number"
+                id="rai"
+                min="1"
+                placeholder="เช่น 20"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>2. ขนาดที่ดิน (กว้าง × ยาว เป็นเมตร)</label>
+              <span class="subtext">(วัดระยะจาก Google Maps ได้)</span>
+              <div class="inline-inputs">
+                <input
+                  type="number"
+                  id="gardenW"
+                  min="1"
+                  placeholder="กว้าง"
+                  required
+                />
+                <span>×</span>
+                <input
+                  type="number"
+                  id="gardenL"
+                  min="1"
+                  placeholder="ยาว"
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>3. ความต่างระดับความสูง (เมตร)</label>
+              <span class="subtext">(ปั๊มถึงจุดสูงสุด แปลงราบใส่ 0)</span>
+              <input
+                type="number"
+                id="elevation"
+                step="0.5"
+                min="0"
+                value="0"
+                required
+              />
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="elevation">
-              3. ความต่างระดับความสูง (เมตร)
-              <span class="subtext">(วัดจากปั๊มถึงจุดสูงสุด แปลงราบกรอก 0 หรือประเมินตามสายตาได้)</span>
-            </label>
-            <input type="number" id="elevation" step="0.5" min="0" placeholder="เช่น 0.5" required />
-          </div>
-        </div>
-
-        <!-- หมวดที่ 2: ผังการปลูก -->
-        <div class="form-section">
-          <div class="form-section-title">🌳 ผังการปลูกต้นไม้</div>
-          <div class="subtext" style="margin-top: -6px; margin-bottom: 12px;">
-            (ถ้ายังไม่ปลูกให้พิมพ์ 0 ระบบจะคำนวณระยะปลูกให้ ด้วยระยะ 8 × 8 เมตร)
-          </div>
-
-          <div class="form-group">
-            <label for="trees">
-              4. จำนวนต้นไม้ทั้งหมด (ต้น)
-              <span class="subtext">(ถ้ายังไม่ปลูกให้พิมพ์ 0 หรือเว้นว่าง)</span>
-            </label>
-            <input type="number" id="trees" min="0" placeholder="เช่น 320 (ไม่ทราบให้เว้นว่างหรือพิมพ์ 0)" />
-          </div>
-
-          <div class="form-group">
-            <label>
-              5. ระยะปลูกต่อต้น (กว้าง × ยาว เป็นเมตร)
-              <span class="subtext">(ไม่ระบุระบบจะกำหนด 8 × 8 เมตรให้อัตโนมัติ)</span>
-            </label>
-            <div class="inline-inputs">
-              <input type="number" id="spacingW" step="0.1" min="1" placeholder="กว้าง (มาตรฐาน 8)" />
-              <span class="separator">×</span>
-              <input type="number" id="spacingL" step="0.1" min="1" placeholder="ยาว (มาตรฐาน 8)" />
+          <!-- หมวด 2: ผังการปลูก -->
+          <div class="section-block block-sec-2">
+            <div class="section-header">🌳 2. ผังการปลูกต้นทุเรียน</div>
+            <div class="form-group">
+              <label>4. จำนวนต้นไม้ทั้งหมด (ต้น)</label>
+              <span class="subtext"
+                >(ถ้ายังไม่ปลูกให้ใส่ 0 ระบบจะคิดให้ด้วยระยะ 8×8 ม.)</span
+              >
+              <input
+                type="number"
+                id="trees"
+                min="0"
+                placeholder="ใส่ 0 หากยังไม่ปลูก"
+              />
             </div>
-          </div>
-        </div>
-
-        <!-- หมวดที่ 3: การแบ่งโซน -->
-        <div class="form-section">
-          <div class="form-section-title">🔀 การบริหารโซนรดน้ำ</div>
-          <div class="form-group">
-            <label for="wantZone">6. ต้องการแบ่งโซนรดน้ำหรือไม่?</label>
-            <select id="wantZone" onchange="toggleZoneInput()">
-              <option value="yes" selected>ต้องการแบ่งโซน (แนะนำเพื่อประหยัดขนาดปั๊ม)</option>
-              <option value="no">ไม่ต้องการแบ่งโซน (เปิดรดพร้อมกันทั้งสวน)</option>
-            </select>
-          </div>
-
-          <div class="form-group" id="zoneInputGroup">
-            <label for="customZones">
-              ระบุจำนวนโซน (ตัวเลข 1 - 6)
-              <span class="subtext">(ไม่แบ่งโซนให้ใส่ 0 หรือปล่อยว่าง)</span>
-            </label>
-            <input type="number" id="customZones" min="0" max="6" placeholder="เช่น 4 (สูงสุด 6)" />
-          </div>
-        </div>
-
-        <!-- หมวดที่ 4: ปั๊มน้ำและชนิดดิน -->
-        <div class="form-section">
-          <div class="form-section-title">⚙️ สเปกปั๊มเดิมและชนิดดิน</div>
-          
-          <div class="pump-img-box">
-            <img src="สกรีนช็อต 2026-09-11 224708.png" alt="ป้ายสเปกปั๊มน้ำ (Nameplate)" />
-            <div class="tip-badge">
-              💡 สังเกตช่อง <strong>P2 1.5 kW</strong> = <strong>2 แรงม้า (HP)</strong> (คำนวณจาก 1.5 kW ÷ 0.746)
+            <div class="form-group">
+              <label>5. ระยะปลูกต่อต้น (กว้าง × ยาว เป็นเมตร)</label>
+              <span class="subtext">(ไม่ระบุระบบจะตั้งเป็น 8 × 8 เมตร)</span>
+              <div class="inline-inputs">
+                <input
+                  type="number"
+                  id="spacingW"
+                  step="0.1"
+                  placeholder="กว้าง (8)"
+                />
+                <span>×</span>
+                <input
+                  type="number"
+                  id="spacingL"
+                  step="0.1"
+                  placeholder="ยาว (8)"
+                />
+              </div>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="currentHp">
-              7. กำลังปั๊มน้ำเดิมที่มี (HP, แรงม้า)
-              <span class="subtext">(ไม่มีปั๊มน้ำให้กรอก 0)</span>
+          <!-- หมวด 3: การแบ่งโซน -->
+          <div class="section-block block-sec-3">
+            <div class="section-header">🔀 3. การบริหารโซนรดน้ำ (โคนต้น)</div>
+            <div class="form-group">
+              <label>6. ต้องการแบ่งโซนรดน้ำหรือไม่?</label>
+              <select
+                id="wantZone"
+                onchange="
+                  document.getElementById('customZones').disabled =
+                    this.value === 'no'
+                "
+              >
+                <option value="yes" selected>
+                  ต้องการแบ่งโซน (แนะนำเพื่อประหยัดปั๊ม)
+                </option>
+                <option value="no">
+                  ไม่ต้องการแบ่งโซน (เปิดพร้อมกันทั้งสวน)
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>ระบุจำนวนโซน (1 - 6 โซน)</label>
+              <input type="number" id="customZones" min="1" max="6" value="4" />
+            </div>
+          </div>
+
+          <!-- หมวด 4: สเปกปั๊มเดิม & หัวโคนต้น -->
+          <div class="section-block block-sec-4">
+            <div class="section-header">
+              ⚙️ 4. สเปกปั๊มเดิมและหัวสปริงเกอร์โคนต้น
+            </div>
+            <div class="pump-img-container">
+              <img src="สกรีนช็อต 2026-09-11 224708.png" alt="Nameplate ปั๊ม" />
+              <div class="subtext" style="margin-top: 6px">
+                💡 สังเกตช่อง <strong>P2 1.5 kW</strong> =
+                <strong>2 แรงม้า (HP)</strong> (คิดจาก 1.5 ÷ 0.746)
+              </div>
+            </div>
+            <div class="form-group">
+              <label>7. กำลังปั๊มน้ำเดิมที่มี (HP, แรงม้า)</label>
+              <span class="subtext">(ไม่มีปั๊มน้ำให้ใส่ 0)</span>
+              <input
+                type="number"
+                id="currentHp"
+                step="0.5"
+                min="0"
+                value="0"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>8. เลือกประเภทหัวสปริงเกอร์โคนต้น และจำนวนหัว/ต้น</label>
+              <div class="inline-inputs">
+                <select id="sprinklerFlow">
+                  <optgroup
+                    label="มินิสเปรย์ / มินิสปริงเกอร์ (ทุเรียนเล็ก 1-2 ปี)"
+                  >
+                    <option value="40">มินิสเปรย์ละเอียด (40 ลิตร/ชม.)</option>
+                    <option value="70">มินิสปริงเกอร์จิ๋ว (70 ลิตร/ชม.)</option>
+                    <option value="120">มินิสปริงเกอร์ (120 ลิตร/ชม.)</option>
+                  </optgroup>
+                  <optgroup label="ใบพัดสแตนเลส / ใบซี (ยอดนิยม ทุเรียนโต)">
+                    <option value="150" selected>
+                      ใบพัดสแตนเลสยอดนิยม (150 ลิตร/ชม.)
+                    </option>
+                    <option value="200">หัวใบซี C-Blade (200 ลิตร/ชม.)</option>
+                    <option value="250">สปริงเกอร์จัมโบ้ (250 ลิตร/ชม.)</option>
+                  </optgroup>
+                  <optgroup label="หัวหมุนรอบตัว Impact (ต้นใหญ่ 7 ปีขึ้นไป)">
+                    <option value="350">
+                      Impact หมุนรอบตัว (350 ลิตร/ชม.)
+                    </option>
+                    <option value="500">
+                      Impact รัศมีกว้างพิเศษ (500 ลิตร/ชม.)
+                    </option>
+                  </optgroup>
+                </select>
+                <input
+                  type="number"
+                  id="headsPerTree"
+                  min="1"
+                  max="10"
+                  placeholder="หัว/ต้น (ปกติ 2)"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- หมวด 5: สปริงเกอร์คลุมพุ่มบนยอด -->
+          <div class="section-block block-sec-mist">
+            <div class="section-header">
+              ❄️ 5. ระบบสปริงเกอร์คลุมพุ่มลดความร้อน (เปิดแยกอิสระ)
+            </div>
+            <label
+              style="
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                margin-bottom: 10px;
+                cursor: pointer;
+              "
+            >
+              <input
+                type="checkbox"
+                id="enableCanopy"
+                style="width: 20px; height: 20px"
+                onchange="
+                  document.getElementById('canopyBox').style.display = this
+                    .checked
+                    ? 'block'
+                    : 'none'
+                "
+              />
+              <span>ต้องการติดตั้งระบบสปริงเกอร์บนยอดไม้เพื่อลดความร้อน</span>
             </label>
-            <input type="number" id="currentHp" step="0.5" min="0" value="0" required />
+            <div id="canopyBox" style="display: none">
+              <div class="form-group">
+                <label>ความสูงของต้นทุเรียน (เมตร)</label>
+                <input
+                  type="number"
+                  id="treeHeight"
+                  step="0.5"
+                  value="5"
+                  min="1.5"
+                />
+              </div>
+              <div class="form-group">
+                <label>เลือกชนิดหัวบนยอด (คิดรัศมีครอบคลุมให้อัตโนมัติ)</label>
+                <select id="canopyFlow">
+                  <option value="120" data-radius="2.5">
+                    หัวละอองหมอก (120 ลิตร/ชม. | ครอบคลุม 2.5 ม.)
+                  </option>
+                  <option value="200" data-radius="4.0" selected>
+                    สปริงเกอร์คลุมพุ่มมาตรฐาน (200 ลิตร/ชม. | ครอบคลุม 4.0 ม.)
+                  </option>
+                  <option value="350" data-radius="6.0">
+                    สปริงเกอร์สาดกว้าง (350 ลิตร/ชม. | ครอบคลุม 6.0 ม.)
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>การแบ่งโซนเปิดเฉพาะระบบยอด</label>
+                <select id="canopyZones">
+                  <option value="1">เปิดพร้อมกันทั้งสวน</option>
+                  <option value="2" selected>แบ่ง 2 โซน (แนะนำ)</option>
+                  <option value="4">แบ่ง 4 โซน</option>
+                </select>
+              </div>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="soilType">8. ชนิดของดินในสวน</label>
-            <select id="soilType" required>
-              <option value="sand">1. ดินทราย (Sand) - 40 ลิตร/ต้น/วัน</option>
-              <option value="loamy_sand">2. ดินทรายปนร่วน (Loamy Sand) - 38 ลิตร/ต้น/วัน</option>
-              <option value="sandy_loam">3. ดินร่วนปนทราย (Sandy Loam) - 35 ลิตร/ต้น/วัน</option>
-              <option value="loam" selected>4. ดินร่วน (Loam) - 30 ลิตร/ต้น/วัน</option>
-              <option value="silt_loam">5. ดินร่วนปนทรายแป้ง (Silt Loam) - 28 ลิตร/ต้น/วัน</option>
-              <option value="silt">6. ดินทรายแป้ง (Silt) - 26 ลิตร/ต้น/วัน</option>
-              <option value="sandy_clay_loam">7. ดินร่วนเหนียวปนทราย (Sandy Clay Loam) - 26 ลิตร/ต้น/วัน</option>
-              <option value="clay_loam">8. ดินร่วนเหนียว (Clay Loam) - 24 ลิตร/ต้น/วัน</option>
-              <option value="silty_clay_loam">9. ดินร่วนเหนียวปนทรายแป้ง (Silty Clay Loam) - 23 ลิตร/ต้น/วัน</option>
-              <option value="sandy_clay">10. ดินเหนียวปนทราย (Sandy Clay) - 22 ลิตร/ต้น/วัน</option>
-              <option value="silty_clay">11. ดินเหนียวปนทรายแป้ง (Silty Clay) - 20 ลิตร/ต้น/วัน</option>
-              <option value="clay">12. ดินเหนียว (Clay) - 18 ลิตร/ต้น/วัน</option>
-            </select>
+          <!-- หมวด 6: ชนิดดิน -->
+          <div class="section-block block-sec-5">
+            <div class="section-header">🌱 6. ชนิดของดินในสวน</div>
+            <div class="form-group">
+              <label>ชนิดดิน (อัตราซึมและการอุ้มน้ำ)</label>
+              <select id="soilType">
+                <option value="sand">1. ดินทราย (40 ลิตร/ต้น/วัน)</option>
+                <option value="sandy_loam">
+                  2. ดินร่วนปนทราย (35 ลิตร/ต้น/วัน)
+                </option>
+                <option value="loam" selected>
+                  3. ดินร่วน (30 ลิตร/ต้น/วัน)
+                </option>
+                <option value="clay_loam">
+                  4. ดินร่วนเหนียว (24 ลิตร/ต้น/วัน)
+                </option>
+                <option value="clay">5. ดินเหนียว (18 ลิตร/ต้น/วัน)</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-calculate">
+            ⚡ คำนวณและวิเคราะห์ผลลัพธ์
+          </button>
+        </form>
+
+        <!-- ผลลัพธ์ -->
+        <div id="resultBox" class="result-panel">
+          <h3 style="margin-bottom: 14px">
+            📊 ผลการวิเคราะห์ระบบน้ำและกายภาพสวน
+          </h3>
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="subtext">💧 ใช้น้ำรวมทั้งสวน</div>
+              <div class="kpi-value" id="kpiWater">0</div>
+              <div class="subtext">
+                คิว/วัน (<span id="kpiWaterLiter">0</span> ลิตร)
+              </div>
+            </div>
+            <div class="kpi-card highlight">
+              <div class="subtext">⚙️ ปั๊มระบบโคนต้น</div>
+              <div class="kpi-value" id="kpiHp">0</div>
+              <div class="subtext">
+                HP (<span id="kpiFlow">0</span> ลิตร/นาที)
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="subtext">🏊 บ่อน้ำ 60 วัน</div>
+              <div class="kpi-value" id="kpiPond">0</div>
+              <div class="subtext">คิว (ลึก 3.5 ม.)</div>
+            </div>
+          </div>
+
+          <div class="result-row-card" id="evalTree"></div>
+          <div class="result-row-card" id="evalSchedule"></div>
+          <div
+            class="result-row-card"
+            id="evalCanopy"
+            style="display: none"
+          ></div>
+          <div class="result-row-card" id="evalPump"></div>
+
+          <div style="text-align: center; margin-top: 16px">
+            <button
+              type="button"
+              onclick="
+                var el = document.getElementById('mathBox');
+                el.style.display =
+                  el.style.display === 'block' ? 'none' : 'block';
+              "
+              style="
+                padding: 6px 16px;
+                border: 2px solid #000;
+                background: #fff;
+                font-weight: 800;
+                border-radius: 99px;
+                cursor: pointer;
+              "
+            >
+              🔍 แสดง/ซ่อน สูตรคำนวณทั้งหมด
+            </button>
+            <div class="math-breakdown" id="mathBox"></div>
           </div>
         </div>
-
-        <button type="submit">คำนวณและวิเคราะห์ผลลัพธ์</button>
-      </form>
-
-      <!-- ส่วนแสดงผลลัพธ์ -->
-      <div id="resultBox" class="result-card">
-        <h3>📊 ผลการวิเคราะห์ระบบน้ำและสวน</h3>
-
-        <div class="summary-input-box" id="inputDataSummary"></div>
-
-        <!-- Grid ไฮไลต์ตัวเลขสำคัญ -->
-        <div class="metrics-grid">
-          <div class="metric-box primary-theme">
-            <div class="metric-label">💧 ใช้น้ำรวมทั้งสวน</div>
-            <div class="metric-val" id="dailyWaterM3Card">0 <span class="metric-unit">คิว/วัน</span></div>
-            <div class="subtext" id="dailyWaterCard">0 ลิตร/วัน</div>
-          </div>
-
-          <div class="metric-box accent-theme">
-            <div class="metric-label">⚙️ ขนาดปั๊มน้ำแนะนำ</div>
-            <div class="metric-val" id="recommendedHpCard">0 <span class="metric-unit">HP</span></div>
-            <div class="subtext">ปั๊มสเปกมาตรฐานตลาด</div>
-          </div>
-        </div>
-
-        <div class="result-detail-row" id="areaTreeEvaluation"></div>
-        <div class="result-detail-row" id="scheduleEvaluation"></div>
-
-        <div class="result-detail-row">
-          🏊 <strong>ขนาดบ่อน้ำสำรองปลอดภัย (รองรับภัยแล้ง 60 วัน / 2 เดือน):</strong><br />
-          ความจุแนะนำ <span id="monthlyWaterM3" class="highlight-val">0</span> คิว
-          <div id="pondDim" class="subtext" style="margin-top: 4px;"></div>
-        </div>
-
-        <div class="result-detail-row" id="hpEvaluation"></div>
       </div>
     </div>
 
     <script>
-      var currentHumidity = 60;
-      var currentTemp = 30;
+      var currentHumidity = 60,
+        currentTemp = 30;
 
-      function toggleZoneInput() {
-        var want = document.getElementById("wantZone").value;
-        var inputZone = document.getElementById("customZones");
-        if (want == "no") {
-          inputZone.value = "0";
-          inputZone.placeholder = "ไม่แบ่งโซน (เป็น 0)";
-        } else {
-          if (inputZone.value == "0") {
-            inputZone.value = "";
-          }
-          inputZone.placeholder = "ไม่เกิน 6 เช่น 4";
-        }
+      // ฟังก์ชันช่วยดึงค่าง่ายๆ ไม่ต้องพิมพ์ยาว
+      function $val(id) {
+        return document.getElementById(id).value;
+      }
+      function $num(id) {
+        return parseFloat($val(id)) || 0;
       }
 
-      function formatMinutes(totalMins) {
-        if (totalMins < 60) {
-          return totalMins + " นาที";
-        }
-        var hours = Math.floor(totalMins / 60);
-        var mins = totalMins % 60;
-        if (mins == 0) {
-          return hours + " ชั่วโมง";
-        }
-        return hours + " ชม. " + mins + " นาที";
-      }
-
-      function getStandardMarketHp(hp) {
-        var marketList = [1, 1.5, 2, 3, 5, 7.5, 10, 15, 20, 25, 30];
-        for (var i = 0; i < marketList.length; i++) {
-          if (hp <= marketList[i]) {
-            return marketList[i];
-          }
+      // ขนาดปั๊มมาตรฐานตามท้องตลาด
+      function getStandardHp(hp) {
+        var list = [1, 1.5, 2, 3, 5, 7.5, 10, 15, 20, 25, 30];
+        for (var i = 0; i < list.length; i++) {
+          if (hp <= list[i]) return list[i];
         }
         return Math.ceil(hp);
       }
 
-      function getGPSAndWeather() {
-        var display = document.getElementById("weatherDisplay");
-
-        if (!navigator.geolocation) {
-          display.innerHTML = "เครื่องไม่รองรับ GPS (ใช้ค่าความชื้นมาตรฐาน 60% แทน)";
-          return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-          function (position) {
-            var lat = position.coords.latitude.toFixed(4);
-            var lon = position.coords.longitude.toFixed(4);
-
-            var apiUrl =
-              "https://api.open-meteo.com/v1/forecast?latitude=" +
+      // ดึงพิกัดและสภาพอากาศ Open-Meteo
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (pos) {
+          var lat = pos.coords.latitude.toFixed(4),
+            lon = pos.coords.longitude.toFixed(4);
+          fetch(
+            "https://api.open-meteo.com/v1/forecast?latitude=" +
               lat +
               "&longitude=" +
               lon +
-              "&current=temperature_2m,relative_humidity_2m";
-
-            fetch(apiUrl)
-              .then(function (res) {
-                return res.json();
-              })
-              .then(function (data) {
-                currentTemp = data.current.temperature_2m;
-                currentHumidity = data.current.relative_humidity_2m;
-                display.innerHTML =
-                  "📍 <strong>พิกัดแปลง:</strong> ละติจูด " +
-                  lat +
-                  "°, ลองจิจูด " +
-                  lon +
-                  "°<br>🌤️ <strong>สภาพอากาศจุดตรวจวัด:</strong> อุณหภูมิ " +
-                  currentTemp +
-                  "°C | ความชื้นสัมพัทธ์ <strong>" +
-                  currentHumidity +
-                  "%</strong>";
-              })
-              .catch(function () {
-                display.innerHTML =
-                  "พิกัด: " + lat + ", " + lon + " (โหลดสภาพอากาศไม่ติด ใช้ค่ามาตรฐาน 60%)";
-              });
-          },
-          function () {
-            display.innerHTML = "ไม่ได้เปิดระบุตำแหน่ง GPS (ใช้ค่าความชื้นมาตรฐาน 60%)";
-          }
-        );
+              "&current=temperature_2m,relative_humidity_2m",
+          )
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (d) {
+              currentTemp = d.current.temperature_2m;
+              currentHumidity = d.current.relative_humidity_2m;
+              document.getElementById("weatherDisplay").innerHTML =
+                "<div>📍 <strong>พิกัด:</strong> " +
+                lat +
+                ", " +
+                lon +
+                "</div><div>🌤️ <strong>อากาศ:</strong> " +
+                currentTemp +
+                "°C | ชื้น <strong>" +
+                currentHumidity +
+                "%</strong></div>";
+            });
+        });
       }
 
-      window.onload = function () {
-        getGPSAndWeather();
-      };
-
+      // เมื่อกดปุ่มคำนวณ
       document.getElementById("waterCalcForm").onsubmit = function (e) {
         e.preventDefault();
 
-        var rai = parseInt(document.getElementById("rai").value);
-        var gardenW = parseFloat(document.getElementById("gardenW").value);
-        var gardenL = parseFloat(document.getElementById("gardenL").value);
-        var elevation = parseFloat(document.getElementById("elevation").value);
+        var rai = $num("rai"),
+          gardenW = $num("gardenW"),
+          gardenL = $num("gardenL"),
+          elevation = $num("elevation");
+        var spacingW = $num("spacingW") || 8,
+          spacingL = $num("spacingL") || 8;
+        var totalLand = rai * 1600,
+          areaPerTree = spacingW * spacingL;
 
-        // ดึงค่าระยะปลูก ถ้าไม่กรอกให้กำหนด 8 x 8 เมตร
-        var rawSpacingW = document.getElementById("spacingW").value.trim();
-        var rawSpacingL = document.getElementById("spacingL").value.trim();
-        var spacingW = rawSpacingW === "" ? 8 : parseFloat(rawSpacingW);
-        var spacingL = rawSpacingL === "" ? 8 : parseFloat(rawSpacingL);
+        // คำนวณจำนวนต้น (ถ้าไม่ใส่ ให้คิดตามพื้นที่)
+        var inputTrees = parseInt($val("trees")) || 0;
+        var trees =
+          inputTrees > 0 ? inputTrees : Math.floor(totalLand / areaPerTree);
 
-        // คำนวณพื้นที่ดินรวม
-        var totalLandArea = rai * 1600;
-        var areaPerTree = spacingW * spacingL;
+        // โซนโคนต้น
+        var wantZone = $val("wantZone");
+        var zones = wantZone === "yes" ? parseInt($val("customZones")) || 1 : 1;
 
-        // ดึงค่าจำนวนต้น ถ้าไม่กรอกหรือใส่ 0 ให้คำนวณจากพื้นที่และระยะปลูกอัตโนมัติ
-        var rawTrees = document.getElementById("trees").value.trim();
-        var inputTrees = rawTrees === "" ? 0 : parseInt(rawTrees, 10);
-        var isAutoCalculatedTrees = false;
-        var trees = inputTrees;
+        // ดินและความต้องการน้ำ
+        var soilWaterTable = {
+          sand: 40,
+          sandy_loam: 35,
+          loam: 30,
+          clay_loam: 24,
+          clay: 18,
+        };
+        var baseWater = soilWaterTable[$val("soilType")] || 30;
 
-        if (trees <= 0) {
-          trees = Math.floor(totalLandArea / areaPerTree);
-          isAutoCalculatedTrees = true;
-        }
+        // ผลกระทบสภาพอากาศ
+        var weatherMult =
+          currentHumidity > 75 ? 0.9 : currentHumidity < 45 ? 1.15 : 1.0;
+        var evapRate =
+          currentHumidity > 75 ? 0.15 : currentHumidity < 45 ? 0.3 : 0.2;
+        var waterPerTreeDay = baseWater * weatherMult;
+        var totalWaterDay = Math.round(trees * waterPerTreeDay);
+        var totalWaterM3 = (totalWaterDay / 1000).toFixed(2);
 
-        var currentHp = parseFloat(document.getElementById("currentHp").value);
+        // บ่อน้ำสำรอง 60 วัน
+        var safeCapacity = totalWaterM3 * 60 * (1 + evapRate);
+        var pondSide = Math.round(Math.sqrt(safeCapacity / 3.5));
 
-        var soilSelect = document.getElementById("soilType");
-        var soilType = soilSelect.value;
-        var soilName = soilSelect.options[soilSelect.selectedIndex].text;
+        // สปริงเกอร์โคนต้น
+        var sprinklerLph = $num("sprinklerFlow");
+        var headsPerTree = parseInt($val("headsPerTree")) || 2;
+        var totalTreeFlowLph = sprinklerLph * headsPerTree;
+        var runMinutes = Math.max(
+          1,
+          Math.round((waterPerTreeDay / totalTreeFlowLph) * 60),
+        );
 
-        var wantZone = document.getElementById("wantZone").value;
-        var zoneBoxVal = document.getElementById("customZones").value;
-        var zones = 1;
+        // คำนวณปั๊มโคนต้น
+        var pipeLength = (gardenL + gardenW) / 2;
+        var headBase = 20 + elevation + pipeLength * 0.05; // 20m แรงดันหัวสปริงเกอร์
+        var flowBaseLpm = ((trees / zones) * headsPerTree * sprinklerLph) / 60;
+        var pumpHpBase = getStandardHp(
+          (flowBaseLpm * headBase) / (4500 * 0.65),
+        );
 
-        if (wantZone == "yes" && zoneBoxVal != "" && parseInt(zoneBoxVal) > 0) {
-          zones = parseInt(zoneBoxVal);
-        }
+        // แสดงผล KPI
+        document.getElementById("kpiWater").innerText = totalWaterM3;
+        document.getElementById("kpiWaterLiter").innerText =
+          totalWaterDay.toLocaleString();
+        document.getElementById("kpiHp").innerText = pumpHpBase;
+        document.getElementById("kpiFlow").innerText = Math.round(flowBaseLpm);
+        document.getElementById("kpiPond").innerText = safeCapacity.toFixed(1);
 
-        if (zones > 6) {
-          alert("กรอกจำนวนโซนเกิน 6 โซนไม่ได้ครับ");
-          return;
-        }
-
-        var summaryBox = document.getElementById("inputDataSummary");
-        var zoneText = "แบ่ง " + zones + " โซน";
-        if (zones == 1) {
-          zoneText = "ไม่แบ่งโซน (เปิดรดทั้งสวนพร้อมกัน)";
-        }
-
-        var oldHpText = currentHp + " HP";
-        if (currentHp == 0) {
-          oldHpText = "ไม่มีปั๊มเดิม (เตรียมจัดซื้อใหม่)";
-        }
-
-        var treesSummaryText = trees.toLocaleString() + " ต้น (ระยะปลูก " + spacingW + " × " + spacingL + " ม.)";
-        if (isAutoCalculatedTrees) {
-          treesSummaryText += " <span style='color:#059669; font-weight:600;'>(*คำนวณให้อัตโนมัติจากขนาดพื้นที่)</span>";
-        }
-
-        summaryBox.innerHTML =
-          "<strong>📋 สรุปข้อมูลหน้างานที่ระบุ:</strong>" +
-          "<ul>" +
-          "<li><strong>ขนาดพื้นที่:</strong> " +
+        // ประเมินต้นและรอบเวลา
+        document.getElementById("evalTree").innerHTML =
+          "🌱 <strong>ผังการปลูก:</strong> สวน " +
           rai +
-          " ไร่ (ขนาดที่ดิน " +
-          gardenW +
-          " × " +
-          gardenL +
-          " เมตร)</li>" +
-          "<li><strong>ความต่างระดับความสูง:</strong> " +
-          elevation +
-          " เมตร</li>" +
-          "<li><strong>จำนวนต้น:</strong> " +
-          treesSummaryText +
-          "</li>" +
-          "<li><strong>การบริหารโซน:</strong> " +
-          zoneText +
-          "</li>" +
-          "<li><strong>ปั๊มเดิมที่มี:</strong> " +
-          oldHpText +
-          "</li>" +
-          "<li><strong>ชนิดเนื้อดิน:</strong> " +
-          soilName +
-          "</li>" +
-          "</ul>";
+          " ไร่ มีทุเรียน <strong>" +
+          trees.toLocaleString() +
+          " ต้น</strong> (ระยะ " +
+          spacingW +
+          "×" +
+          spacingL +
+          " ม.)";
+        document.getElementById("evalSchedule").innerHTML =
+          "⏱️ <strong>รอบรดน้ำโคนต้น:</strong> " +
+          (zones === 1 ? "ทั้งแปลง" : "โซนละ") +
+          " <strong>" +
+          runMinutes +
+          " นาที/วัน</strong> (แบ่ง " +
+          zones +
+          " โซน)";
 
-        var waterPerTree = 30;
-        if (soilType == "sand") waterPerTree = 40;
-        else if (soilType == "loamy_sand") waterPerTree = 38;
-        else if (soilType == "sandy_loam") waterPerTree = 35;
-        else if (soilType == "loam") waterPerTree = 30;
-        else if (soilType == "silt_loam") waterPerTree = 28;
-        else if (soilType == "silt") waterPerTree = 26;
-        else if (soilType == "sandy_clay_loam") waterPerTree = 26;
-        else if (soilType == "clay_loam") waterPerTree = 24;
-        else if (soilType == "silty_clay_loam") waterPerTree = 23;
-        else if (soilType == "sandy_clay") waterPerTree = 22;
-        else if (soilType == "silty_clay") waterPerTree = 20;
-        else if (soilType == "clay") waterPerTree = 18;
+        // ระบบสปริงเกอร์บนยอด
+        var enableCanopy = document.getElementById("enableCanopy").checked;
+        var canopyBox = document.getElementById("evalCanopy");
+        var pumpHpCanopy = 0,
+          flowCanopyLpm = 0,
+          canopyTotalHead = 0;
 
-        var cycles = 1;
-        var cycleReason = "เนื้อดินอุ้มน้ำได้ดี แนะนำให้รดวันละ 1 รอบตอนเช้า";
-        if (soilType == "sand" || soilType == "loamy_sand" || currentHumidity < 40) {
-          cycles = 2;
-          cycleReason = "ดินระบายน้ำเร็วมากหรืออากาศแห้ง แนะนำรดวันละ 2 รอบ เพื่อไม่ให้น้ำซึมลึกเกินราก";
-        }
+        if (enableCanopy) {
+          var treeHeight = $num("treeHeight");
+          var canopyOpt =
+            document.getElementById("canopyFlow").selectedOptions[0];
+          var canopyLph = parseFloat(canopyOpt.value);
+          var canopyRadius =
+            parseFloat(canopyOpt.getAttribute("data-radius")) || 4.0;
+          var canopyZones = parseInt($val("canopyZones")) || 2;
 
-        var evapRate = 0.2;
-        var plantMultiply = 1.0;
-        var weatherNote = "*ความชื้นปกติ (" + currentHumidity + "%) ปริมาณน้ำตามเกณฑ์มาตรฐาน";
+          // รัศมีพุ่มประมาณ 50% ของความสูง
+          var treeRadius = Math.min(
+            treeHeight * 0.5,
+            Math.min(spacingW, spacingL) / 2,
+          );
+          var canopyHeads = Math.max(
+            1,
+            Math.ceil(
+              (Math.PI * treeRadius * treeRadius) /
+                (Math.PI * canopyRadius * canopyRadius),
+            ),
+          );
 
-        if (currentHumidity < 45) {
-          evapRate = 0.3;
-          plantMultiply = 1.15;
-          weatherNote =
-            "*อากาศแห้งจัด (ความชื้น " +
-            currentHumidity +
-            "%) พืชคายน้ำเพิ่ม 15% เผื่อระเหยผิวน้ำบ่อ 30%";
-        } else if (currentHumidity > 75) {
-          evapRate = 0.15;
-          plantMultiply = 0.9;
-          weatherNote =
-            "*ความชื้นสูง (" + currentHumidity + "%) พืชคายน้ำลดลง เผื่อระเหยผิวน้ำบ่อ 15%";
-        }
+          canopyTotalHead = headBase + treeHeight;
+          flowCanopyLpm =
+            ((trees / canopyZones) * canopyHeads * canopyLph) / 60;
+          pumpHpCanopy = getStandardHp(
+            (flowCanopyLpm * canopyTotalHead) / (4500 * 0.65),
+          );
 
-        var dailyWaterTotal = Math.round(trees * (waterPerTree * plantMultiply));
-        var dailyWaterM3 = (dailyWaterTotal / 1000).toFixed(2);
-
-        var safeCapacity = dailyWaterM3 * 60 * (1 + evapRate);
-        var pondDepth = 3.5;
-        var pondSide = Math.round(Math.sqrt(safeCapacity / pondDepth));
-        var pondArea = pondSide * pondSide;
-
-        var netArea = totalLandArea - pondArea;
-        var maxTrees = Math.floor(netArea / areaPerTree);
-
-        var areaBox = document.getElementById("areaTreeEvaluation");
-        if (trees == maxTrees || isAutoCalculatedTrees) {
-          areaBox.innerHTML =
-            "🌱 <strong>การจัดวางจำนวนต้น:</strong> <span style='color:#059669; font-weight:bold;'>เหมาะสมกับพื้นที่</span><br><span class='subtext'>ใช้ระยะปลูก " +
-            spacingW +
-            " × " +
-            spacingL +
-            " ม. สวนขนาด " +
-            rai +
-            " ไร่ (" +
-            totalLandArea.toLocaleString() +
-            " ตร.ม.) จะปลูกได้ประมาณ <strong>" +
-            trees.toLocaleString() +
-            " ต้น</strong></span>";
-        } else if (trees > maxTrees) {
-          areaBox.innerHTML =
-            "🌱 <strong>การจัดวางจำนวนต้น:</strong> <span style='color:#ef4444; font-weight:bold;'>หนาแน่นเกินไป</span><br>ระบุไว้: <strong>" +
-            trees.toLocaleString() +
-            " ต้น</strong> | แนะนำไม่เกิน: <strong style='color:#059669;'>" +
-            maxTrees.toLocaleString() +
-            " ต้น</strong><br><span class='subtext'>⚠️ ปลูกชิดเกินไป ทรงพุ่มจะบังแดดกันเอง และเสี่ยงต่อการเกิดโรคเชื้อราในสวนทุเรียน</span>";
+          canopyBox.style.display = "block";
+          canopyBox.innerHTML =
+            "❄️ <strong>ระบบบนยอดลดความร้อน:</strong> รัศมีพุ่ม ~" +
+            treeRadius.toFixed(1) +
+            " ม. --> ติดตั้ง <strong>" +
+            canopyHeads +
+            " หัว/ต้น</strong> | แบ่ง " +
+            canopyZones +
+            " โซน (ต้องการปั๊ม <strong>" +
+            pumpHpCanopy +
+            " HP</strong>, อัตราไหล " +
+            Math.round(flowCanopyLpm) +
+            " ลิตร/นาที)";
         } else {
-          areaBox.innerHTML =
-            "🌱 <strong>การจัดวางจำนวนต้น:</strong> <span style='color:#0284c7; font-weight:bold;'>โปร่งสบาย</span><br>ระบุไว้: <strong>" +
-            trees.toLocaleString() +
-            " ต้น</strong> (แปลงนี้สามารถรองรับได้สูงสุด <strong>" +
-            maxTrees.toLocaleString() +
-            " ต้น</strong>)";
+          canopyBox.style.display = "none";
         }
 
-        var totalHours = 3.5;
-        if (zones == 1) {
-          totalHours = 2.5;
-        }
-        var totalMinutes = totalHours * 60;
-        var minutesPerZone = Math.round(totalMinutes / zones / cycles);
-        var timeFormatted = formatMinutes(minutesPerZone);
-
-        var zoneNameText = "โซนละ";
-        if (zones == 1) {
-          zoneNameText = "ทั้งแปลง";
-        }
-
-        var schedBox = document.getElementById("scheduleEvaluation");
-        schedBox.innerHTML =
-          "⏱️ <strong>รอบเวลาการเปิดให้น้ำที่เหมาะสม:</strong><br>" +
-          "• <strong>รูปแบบ:</strong> " +
-          zoneText +
-          "<br>" +
-          "• <strong>ความถี่:</strong> รดวันละ <strong>" +
-          cycles +
-          " ครั้ง</strong> (" +
-          cycleReason +
-          ")<br>" +
-          "• <strong>ระยะเวลาเปิด:</strong> <strong>" +
-          zoneNameText +
-          " " +
-          timeFormatted +
-          "</strong> ต่อรอบ";
-
-        var pipeLength = gardenL / 2 + gardenW / 2;
-        var pipeFriction = pipeLength * 0.05;
-        var sprinklerHead = 20;
-        var totalHead = sprinklerHead + elevation + pipeFriction;
-
-        var flowRateLpm = dailyWaterTotal / zones / (minutesPerZone * cycles);
-        var rawHp = (flowRateLpm * totalHead) / (4500 * 0.65);
-        var pumpHp = getStandardMarketHp(rawHp);
-
-        // นำค่าไปใส่ในกล่อง Metric Cards และแถวแสดงผล
-        document.getElementById("dailyWaterM3Card").innerHTML =
-          dailyWaterM3 + ' <span class="metric-unit">คิว/วัน</span>';
-        document.getElementById("dailyWaterCard").innerText =
-          dailyWaterTotal.toLocaleString() + " ลิตร/วัน";
-
-        document.getElementById("recommendedHpCard").innerHTML =
-          pumpHp + ' <span class="metric-unit">HP</span>';
-
-        document.getElementById("monthlyWaterM3").innerText = safeCapacity.toFixed(2);
-        document.getElementById("pondDim").innerText =
-          "*ขนาดบ่อแนะนำ: กว้าง ~" +
-          pondSide +
-          " ม. × ยาว ~" +
-          pondSide +
-          " ม. ลึก " +
-          pondDepth +
-          " ม. (กินพื้นที่ผิวดิน " +
-          pondArea.toLocaleString() +
-          " ตร.ม.)";
-
-        var hpBox = document.getElementById("hpEvaluation");
-        if (currentHp == 0) {
-          hpBox.innerHTML =
-            "<span style='color:#0284c7; font-weight:600;'>ℹ️ สวนนี้แนะนำติดตั้งปั๊มใหม่ขนาดมาตรฐาน <strong>" +
-            pumpHp +
-            " HP</strong> สำหรับเปิดจ่ายน้ำทีละโซน</span>";
-        } else if (currentHp >= pumpHp) {
-          hpBox.innerHTML =
-            "<span style='color:#059669; font-weight:600;'>✅ ปั๊มเดิมที่มี (" +
-            currentHp +
-            " HP) มีกำลังเพียงพอสำหรับการใช้งานระบบนี้ (ต้องการ " +
-            pumpHp +
-            " HP)</span>";
+        // ประเมินปั๊มเดิม
+        var currentHp = $num("currentHp");
+        var hpText = "";
+        if (currentHp === 0) {
+          hpText =
+            "ℹ️ <strong>ปั๊มใหม่แนะนำ:</strong> โคนต้นใช้ <strong>" +
+            pumpHpBase +
+            " HP</strong>" +
+            (enableCanopy
+              ? " | ระบบยอดใช้ <strong>" +
+                pumpHpCanopy +
+                " HP</strong> (ซื้อปั๊มตัวเดียวเลือกขนาด " +
+                Math.max(pumpHpBase, pumpHpCanopy) +
+                " HP)"
+              : "");
         } else {
-          hpBox.innerHTML =
-            "<span style='color:#ef4444; font-weight:600;'>⚠️ ปั๊มเดิม (" +
-            currentHp +
-            " HP) กำลังไม่พอ (ระบบต้องการ " +
-            pumpHp +
-            " HP) แนะนำเปลี่ยนปั๊มหรือเพิ่มจำนวนโซนรดน้ำ</span>";
+          var okBase = currentHp >= pumpHpBase;
+          var okCanopy = enableCanopy ? currentHp >= pumpHpCanopy : true;
+          if (okBase && okCanopy)
+            hpText =
+              "✅ <strong>ปั๊มเดิม " +
+              currentHp +
+              " HP พอเพียง</strong> สำหรับเปิดใช้งานทีละระบบ";
+          else
+            hpText =
+              "⚠️ <strong>ปั๊มเดิม " +
+              currentHp +
+              " HP แรงไม่พอ</strong> (โคนต้นต้องการ " +
+              pumpHpBase +
+              " HP" +
+              (enableCanopy ? ", ยอดต้องการ " + pumpHpCanopy + " HP" : "") +
+              ") แนะนำเพิ่มโซนหรือเปลี่ยนปั๊ม";
+        }
+        document.getElementById("evalPump").innerHTML = hpText;
+
+        // รายละเอียดสูตร
+        var mathHtml = `
+          <strong>1. มิติแปลงและจำนวนต้น:</strong><br>
+          • พื้นที่: ${rai} ไร่ × 1,600 = ${totalLand.toLocaleString()} ตร.ม. --> ได้ ${trees} ต้น<br><br>
+          <strong>2. ความต้องการน้ำ (ความชื้น ${currentHumidity}%):</strong><br>
+          • น้ำต่อต้น: ${baseWater} × ${weatherMult} = ${waterPerTreeDay.toFixed(1)} ลิตร/วัน --> รวมทั้งสวน ${totalWaterDay.toLocaleString()} ลิตร (${totalWaterM3} คิว)<br><br>
+          <strong>3. บ่อน้ำสำรอง 60 วัน (เผื่อระเหย ${evapRate * 100}%):</strong><br>
+          • ความจุ: ${safeCapacity.toFixed(1)} คิว --> บ่อลึก 3.5 ม. กว้างประมาณ ~${pondSide} × ${pondSide} ม.<br><br>
+          <strong>4. กำลังปั๊มโคนต้น (แบ่ง ${zones} โซน):</strong><br>
+          • <strong>อัตราไหลของโซน (Q):</strong><br><span class="code-tag">${Math.round(flowBaseLpm)} ลิตร/นาที</span><br>
+          • <strong>แรงดันสูญเสียรวม (TDH):</strong><br><span class="code-tag">${headBase.toFixed(1)} เมตร</span><br>
+          • คำนวณแรงม้า: (${flowBaseLpm.toFixed(1)} × ${headBase.toFixed(1)}) ÷ 2925 = ${((flowBaseLpm * headBase) / 2925).toFixed(2)} HP --> <strong>ขนาดตลาด: ${pumpHpBase} HP</strong>
+        `;
+
+        if (enableCanopy) {
+          mathHtml += `
+            <br><br><strong>5. กำลังปั๊มระบบยอด (ความสูงต้น ${$num("treeHeight")} ม. | แบ่ง ${$val("canopyZones")} โซน):</strong><br>
+            • <strong>อัตราไหลระบบยอด (Q):</strong><br><span class="code-tag">${Math.round(flowCanopyLpm)} ลิตร/นาที</span><br>
+            • <strong>แรงดันสูญเสียรวม (TDH):</strong><br><span class="code-tag">${canopyTotalHead.toFixed(1)} เมตร</span><br>
+            • คำนวณแรงม้า: (${flowCanopyLpm.toFixed(1)} × ${canopyTotalHead.toFixed(1)}) ÷ 2925 = ${((flowCanopyLpm * canopyTotalHead) / 2925).toFixed(2)} HP --> <strong>ขนาดตลาด: ${pumpHpCanopy} HP</strong>
+          `;
         }
 
+        document.getElementById("mathBox").innerHTML = mathHtml;
         document.getElementById("resultBox").style.display = "block";
+        document
+          .getElementById("resultBox")
+          .scrollIntoView({ behavior: "smooth" });
       };
     </script>
   </body>
