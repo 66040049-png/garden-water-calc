@@ -130,7 +130,7 @@
       }
       .inline-inputs {
         display: flex;
-        gap: 10px;
+        gap: 8px;
         align-items: center;
       }
       .inline-inputs input,
@@ -153,6 +153,25 @@
       input:focus,
       select:focus {
         border-color: #000;
+      }
+
+      .checkbox-card-toggle {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        background: #f8fafc;
+        border: 2px solid var(--border);
+        padding: 12px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-bottom: 10px;
+      }
+      .checkbox-card-toggle input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+        accent-color: #000;
+        margin-top: 2px;
       }
 
       .pump-img-container {
@@ -221,34 +240,13 @@
         font-size: 0.92rem;
         font-weight: 600;
       }
-      .code-tag {
-        background: #f3f4f6;
-        border: 1px solid #9ca3af;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-family: monospace;
-        font-weight: 800;
-        display: inline-block;
-        margin-top: 2px;
-      }
-      .math-breakdown {
-        display: none;
-        margin-top: 14px;
-        background: #fff;
-        border: 2px solid #000;
-        border-radius: 10px;
-        padding: 16px;
-        font-size: 0.88rem;
-        line-height: 1.7;
-      }
     </style>
   </head>
   <body>
     <div class="app-container">
       <header class="app-header">
-        
+        <div class="badge-tag">☀️ CLEAN HIGH-CONTRAST</div>
         <h1>🌳ระบบคำนวณระบบน้ำในสวนทุเรียน🌳</h1>
-        
       </header>
 
       <div class="weather-card" id="weatherDisplay">
@@ -258,18 +256,36 @@
 
       <div class="main-card">
         <form id="waterCalcForm">
-          <!-- หมวด 1: ข้อมูลที่ดิน -->
+          <!-- หมวด 1: ข้อมูลที่ดิน (ปรับช่องพื้นที่เป็น ไร่, งาน, ตารางวา) -->
           <div class="section-block block-sec-1">
             <div class="section-header">📐 1. ข้อมูลขนาดแปลงที่ดิน</div>
             <div class="form-group">
-              <label>1. จำนวนพื้นที่ (ไร่)</label>
-              <input
-                type="number"
-                id="rai"
-                min="1"
-                placeholder="เช่น 20"
-                required
-              />
+              <label>1. จำนวนพื้นที่แปลง (ไร่ / งาน / ตารางวา)</label>
+              <div class="inline-inputs" style="margin-top: 4px">
+                <input
+                  type="number"
+                  id="landRai"
+                  min="0"
+                  placeholder="ไร่"
+                  value=""
+                />
+                <input
+                  type="number"
+                  id="landNgan"
+                  min="0"
+                  max="3"
+                  placeholder="งาน"
+                  value=""
+                />
+                <input
+                  type="number"
+                  id="landWah"
+                  min="0"
+                  max="99"
+                  placeholder="ตร.ว."
+                  value=""
+                />
+              </div>
             </div>
             <div class="form-group">
               <label>2. ขนาดที่ดิน (กว้าง × ยาว เป็นเมตร)</label>
@@ -344,34 +360,46 @@
 
           <!-- หมวด 3: การแบ่งโซน -->
           <div class="section-block block-sec-3">
-            <div class="section-header">🔀 3. การบริหารโซนรดน้ำ (โคนต้น)</div>
-            <div class="form-group">
-              <label>6. ต้องการแบ่งโซนรดน้ำหรือไม่?</label>
-              <select
-                id="wantZone"
-                onchange="
-                  document.getElementById('customZones').disabled =
-                    this.value === 'no'
-                "
-              >
-                <option value="yes" selected>
-                  ต้องการแบ่งโซน (แนะนำเพื่อประหยัดปั๊ม)
-                </option>
-                <option value="no">
-                  ไม่ต้องการแบ่งโซน (เปิดพร้อมกันทั้งสวน)
-                </option>
-              </select>
+            <div class="section-header">
+              🔀 3. การบริหารโซนรดน้ำและรอบรดน้ำ (โคนต้น)
             </div>
-            <div class="form-group">
+
+            <label class="checkbox-card-toggle">
+              <input
+                type="checkbox"
+                id="enableZone"
+                onchange="toggleZoneInputs()"
+              />
+              <div>
+                <strong>ต้องการแบ่งโซนรดน้ำ (แนะนำเพื่อประหยัดขนาดปั๊ม)</strong>
+                <div class="subtext">
+                  หากไม่ติ๊ก ระบบจะคิดค่าเป็น 1 โซน (เปิดพร้อมกันทั้งสวน)
+                </div>
+              </div>
+            </label>
+
+            <div
+              class="form-group"
+              id="zoneInputGroup"
+              style="display: none; margin-top: 10px"
+            >
               <label>ระบุจำนวนโซน (1 - 6 โซน)</label>
               <input type="number" id="customZones" min="1" max="6" value="4" />
             </div>
+
+            <div class="form-group" style="margin-top: 12px">
+              <label>จำนวนรอบรดน้ำต่อวัน (สูงสุดไม่เกิน 2 รอบ)</label>
+              <select id="waterCycles">
+                <option value="1">รดน้ำ 1 รอบต่อวัน</option>
+                <option value="2" selected>รดน้ำ 2 รอบต่อวัน (แนะนำ)</option>
+              </select>
+            </div>
           </div>
 
-          <!-- หมวด 4: สเปกปั๊มเดิม & หัวโคนต้น -->
+          <!-- หมวด 4: สเปกปั๊มเดิม, บ่อน้ำเดิม & หัวโคนต้น -->
           <div class="section-block block-sec-4">
             <div class="section-header">
-              ⚙️ 4. สเปกปั๊มเดิมและหัวสปริงเกอร์โคนต้น
+              ⚙️ 4. สเปกปั๊มเดิม บ่อน้ำเดิม และหัวสปริงเกอร์โคนต้น
             </div>
             <div class="pump-img-container">
               <img src="สกรีนช็อต 2026-09-11 224708.png" alt="Nameplate ปั๊ม" />
@@ -392,40 +420,117 @@
                 required
               />
             </div>
-            <div class="form-group">
-              <label>8. เลือกประเภทหัวสปริงเกอร์โคนต้น และจำนวนหัว/ต้น</label>
-              <div class="inline-inputs">
-                <select id="sprinklerFlow">
-                  <optgroup
-                    label="มินิสเปรย์ / มินิสปริงเกอร์ (ทุเรียนเล็ก 1-2 ปี)"
+
+            <label class="checkbox-card-toggle" style="margin-top: 10px">
+              <input
+                type="checkbox"
+                id="hasExistingPond"
+                onchange="togglePondInputs()"
+              />
+              <div>
+                <strong>มีบ่อน้ำเดิมในสวนอยู่แล้ว</strong>
+                <div class="subtext">
+                  ติ๊กเพื่อระบุขนาดบ่อเดิม (ไร่, งาน, ตารางวา)
+                  เพื่อให้ระบบตรวจสอบความเพียงพอ
+                </div>
+              </div>
+            </label>
+
+            <div
+              id="existingPondInputs"
+              style="
+                display: none;
+                background: #f8fafc;
+                border: 1.5px solid #cbd5e1;
+                border-radius: 8px;
+                padding: 12px;
+                margin-bottom: 12px;
+              "
+            >
+              <div class="form-group">
+                <label
+                  >ขนาดบ่อเดิม (ไร่ / งาน / ตารางวา) และ ความลึก (เมตร)</label
+                >
+                <div class="inline-inputs" style="margin-bottom: 6px">
+                  <input
+                    type="number"
+                    id="pondRai"
+                    min="0"
+                    placeholder="ไร่"
+                    value="0"
+                  />
+                  <input
+                    type="number"
+                    id="pondNgan"
+                    min="0"
+                    max="3"
+                    placeholder="งาน"
+                    value="0"
+                  />
+                  <input
+                    type="number"
+                    id="pondWah"
+                    min="0"
+                    max="99"
+                    placeholder="ตร.ว."
+                    value="0"
+                  />
+                </div>
+                <div class="inline-inputs">
+                  <span
+                    style="font-size: 0.88rem; font-weight: 800; width: 80px"
+                    >ความลึก:</span
                   >
-                    <option value="40">มินิสเปรย์ละเอียด (40 ลิตร/ชม.)</option>
-                    <option value="70">มินิสปริงเกอร์จิ๋ว (70 ลิตร/ชม.)</option>
-                    <option value="120">มินิสปริงเกอร์ (120 ลิตร/ชม.)</option>
-                  </optgroup>
-                  <optgroup label="ใบพัดสแตนเลส / ใบซี (ยอดนิยม ทุเรียนโต)">
-                    <option value="150" selected>
-                      ใบพัดสแตนเลสยอดนิยม (150 ลิตร/ชม.)
-                    </option>
-                    <option value="200">หัวใบซี C-Blade (200 ลิตร/ชม.)</option>
-                    <option value="250">สปริงเกอร์จัมโบ้ (250 ลิตร/ชม.)</option>
-                  </optgroup>
-                  <optgroup label="หัวหมุนรอบตัว Impact (ต้นใหญ่ 7 ปีขึ้นไป)">
-                    <option value="350">
-                      Impact หมุนรอบตัว (350 ลิตร/ชม.)
-                    </option>
-                    <option value="500">
-                      Impact รัศมีกว้างพิเศษ (500 ลิตร/ชม.)
-                    </option>
-                  </optgroup>
-                </select>
+                  <input
+                    type="number"
+                    id="existingPondDepth"
+                    step="0.5"
+                    min="0"
+                    placeholder="ลึก (เมตร) เช่น 3.5 (ใส่ 0 คือไม่มีบ่อ)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 10px">
+              <label>8. ข้อมูลหัวสปริงเกอร์โคนต้น</label>
+              <label
+                class="checkbox-card-toggle"
+                style="margin-top: 4px; margin-bottom: 8px"
+              >
                 <input
-                  type="number"
-                  id="headsPerTree"
-                  min="1"
-                  max="10"
-                  placeholder="หัว/ต้น (ปกติ 2)"
+                  type="checkbox"
+                  id="hasBaseSprinkler"
+                  onchange="toggleBaseSprinklerInput()"
                 />
+                <span style="font-weight: 700"
+                  >มีหัวสปริงเกอร์อยู่แล้ว
+                  (ติ๊กเพื่อกรอกอัตราจ่ายน้ำและจำนวนหัวเอง)</span
+                >
+              </label>
+
+              <div id="baseSprinklerCustomGroup" style="display: none">
+                <span class="subtext"
+                  >ระบุอัตราจ่ายน้ำของหัวเดิม (ลิตร/ชม.) และจำนวนหัวต่อต้น</span
+                >
+                <div class="inline-inputs">
+                  <input
+                    type="number"
+                    id="customSprinklerFlow"
+                    min="10"
+                    step="10"
+                    placeholder="อัตราจ่ายน้ำ (ลิตร/ชม.) เช่น 150"
+                    value="150"
+                  />
+                  <input
+                    type="number"
+                    id="headsPerTree"
+                    min="1"
+                    max="10"
+                    placeholder="จำนวนหัว/ต้น เช่น 2"
+                    value="2"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -433,21 +538,12 @@
           <!-- หมวด 5: สปริงเกอร์คลุมพุ่มบนยอด -->
           <div class="section-block block-sec-mist">
             <div class="section-header">
-              ❄️ 5. ระบบสปริงเกอร์คลุมพุ่มลดความร้อน (เปิดแยกอิสระ)
+              ❄️ 5. ระบบสปริงเกอร์คลุมพุ่มบนยอดไม้เพื่อลดความร้อน (เปิดแยกอิสระ)
             </div>
-            <label
-              style="
-                display: flex;
-                gap: 8px;
-                align-items: center;
-                margin-bottom: 10px;
-                cursor: pointer;
-              "
-            >
+            <label class="checkbox-card-toggle">
               <input
                 type="checkbox"
                 id="enableCanopy"
-                style="width: 20px; height: 20px"
                 onchange="
                   document.getElementById('canopyBox').style.display = this
                     .checked
@@ -455,9 +551,14 @@
                     : 'none'
                 "
               />
-              <span>ต้องการติดตั้งระบบสปริงเกอร์บนยอดไม้เพื่อลดความร้อน</span>
+              <div>
+                <strong
+                  >ต้องการติดตั้งระบบสปริงเกอร์บนยอดไม้ (1 หัว คลุม 4
+                  ต้น)</strong
+                >
+              </div>
             </label>
-            <div id="canopyBox" style="display: none">
+            <div id="canopyBox" style="display: none; margin-top: 10px">
               <div class="form-group">
                 <label>ความสูงของต้นทุเรียน (เมตร)</label>
                 <input
@@ -469,16 +570,17 @@
                 />
               </div>
               <div class="form-group">
-                <label>เลือกชนิดหัวบนยอด (คิดรัศมีครอบคลุมให้อัตโนมัติ)</label>
+                <label>เลือกชนิดหัวสปริงเกอร์บนยอด (จ่ายน้ำคลุม 4 ต้น)</label>
                 <select id="canopyFlow">
-                  <option value="120" data-radius="2.5">
-                    หัวละอองหมอก (120 ลิตร/ชม. | ครอบคลุม 2.5 ม.)
+                  <option value="150">หัวพ่นฝอยละอองน้ำ (150 ลิตร/ชม.)</option>
+                  <option value="250" selected>
+                    สปริงเกอร์คลุมพุ่มมาตรฐาน (250 ลิตร/ชม.)
                   </option>
-                  <option value="200" data-radius="4.0" selected>
-                    สปริงเกอร์คลุมพุ่มมาตรฐาน (200 ลิตร/ชม. | ครอบคลุม 4.0 ม.)
+                  <option value="350">
+                    สปริงเกอร์หมุนสาดกว้าง (350 ลิตร/ชม.)
                   </option>
-                  <option value="350" data-radius="6.0">
-                    สปริงเกอร์สาดกว้าง (350 ลิตร/ชม. | ครอบคลุม 6.0 ม.)
+                  <option value="500">
+                    หัวบิ๊กสปริงเกอร์ยอดใหญ่ (500 ลิตร/ชม.)
                   </option>
                 </select>
               </div>
@@ -487,6 +589,7 @@
                 <select id="canopyZones">
                   <option value="1">เปิดพร้อมกันทั้งสวน</option>
                   <option value="2" selected>แบ่ง 2 โซน (แนะนำ)</option>
+                  <option value="3">แบ่ง 3 โซน</option>
                   <option value="4">แบ่ง 4 โซน</option>
                 </select>
               </div>
@@ -540,42 +643,22 @@
               </div>
             </div>
             <div class="kpi-card">
-              <div class="subtext">🏊 บ่อน้ำ 60 วัน</div>
+              <div class="subtext" id="kpiPondTitle">🏊 บ่อน้ำสำรอง 30 วัน</div>
               <div class="kpi-value" id="kpiPond">0</div>
-              <div class="subtext">คิว (ลึก 3.5 ม.)</div>
+              <div class="subtext" id="kpiPondSub">คิว</div>
             </div>
           </div>
 
           <div class="result-row-card" id="evalTree"></div>
+          <div class="result-row-card" id="evalSprinkler"></div>
           <div class="result-row-card" id="evalSchedule"></div>
+          <div class="result-row-card" id="evalPond"></div>
           <div
             class="result-row-card"
             id="evalCanopy"
             style="display: none"
           ></div>
           <div class="result-row-card" id="evalPump"></div>
-
-          <div style="text-align: center; margin-top: 16px">
-            <button
-              type="button"
-              onclick="
-                var el = document.getElementById('mathBox');
-                el.style.display =
-                  el.style.display === 'block' ? 'none' : 'block';
-              "
-              style="
-                padding: 6px 16px;
-                border: 2px solid #000;
-                background: #fff;
-                font-weight: 800;
-                border-radius: 99px;
-                cursor: pointer;
-              "
-            >
-              🔍 แสดง/ซ่อน สูตรคำนวณทั้งหมด
-            </button>
-            <div class="math-breakdown" id="mathBox"></div>
-          </div>
         </div>
       </div>
     </div>
@@ -584,7 +667,6 @@
       var currentHumidity = 60,
         currentTemp = 30;
 
-      // ฟังก์ชันช่วยดึงค่าง่ายๆ ไม่ต้องพิมพ์ยาว
       function $val(id) {
         return document.getElementById(id).value;
       }
@@ -592,16 +674,42 @@
         return parseFloat($val(id)) || 0;
       }
 
-      // ขนาดปั๊มมาตรฐานตามท้องตลาด
+      function toggleZoneInputs() {
+        var isChecked = document.getElementById("enableZone").checked;
+        document.getElementById("zoneInputGroup").style.display = isChecked
+          ? "block"
+          : "none";
+      }
+
+      function toggleBaseSprinklerInput() {
+        var hasSprinkler = document.getElementById("hasBaseSprinkler").checked;
+        document.getElementById("baseSprinklerCustomGroup").style.display =
+          hasSprinkler ? "block" : "none";
+      }
+
+      function togglePondInputs() {
+        var isChecked = document.getElementById("hasExistingPond").checked;
+        document.getElementById("existingPondInputs").style.display = isChecked
+          ? "block"
+          : "none";
+        if (!isChecked) {
+          document.getElementById("pondRai").value = 0;
+          document.getElementById("pondNgan").value = 0;
+          document.getElementById("pondWah").value = 0;
+          document.getElementById("existingPondDepth").value = "";
+        }
+      }
+
       function getStandardHp(hp) {
-        var list = [1, 1.5, 2, 3, 5, 7.5, 10, 15, 20, 25, 30];
+        var list = [
+          1, 1.5, 2, 3, 5, 7.5, 10, 15, 20, 25, 30, 40, 50, 60, 75, 100,
+        ];
         for (var i = 0; i < list.length; i++) {
           if (hp <= list[i]) return list[i];
         }
         return Math.ceil(hp);
       }
 
-      // ดึงพิกัดและสภาพอากาศ Open-Meteo
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (pos) {
           var lat = pos.coords.latitude.toFixed(4),
@@ -633,29 +741,33 @@
         });
       }
 
-      // เมื่อกดปุ่มคำนวณ
       document.getElementById("waterCalcForm").onsubmit = function (e) {
         e.preventDefault();
 
-        var rai = $num("rai"),
-          gardenW = $num("gardenW"),
-          gardenL = $num("gardenL"),
-          elevation = $num("elevation");
+        // คำนวณพื้นที่แปลงรวมจาก ไร่, งาน, ตารางวา (1 ไร่ = 1,600 ตร.ม., 1 งาน = 400 ตร.ม., 1 ตร.ว. = 4 ตร.ม.)
+        var lRai = $num("landRai") || 0;
+        var lNgan = $num("landNgan") || 0;
+        var lWah = $num("landWah") || 0;
+        var totalLand = lRai * 1600 + lNgan * 400 + lWah * 4;
+        var rai = totalLand > 0 ? totalLand / 1600 : 1; // แปลงกลับเป็นหน่วยไร่เพื่อใช้แสดงผลคำนวณ
+
+        var gardenW = $num("gardenW") || 100,
+          gardenL = $num("gardenL") || 100,
+          elevation = $num("elevation") || 0;
         var spacingW = $num("spacingW") || 8,
           spacingL = $num("spacingL") || 8;
-        var totalLand = rai * 1600,
-          areaPerTree = spacingW * spacingL;
+        var areaPerTree = spacingW * spacingL;
 
-        // คำนวณจำนวนต้น (ถ้าไม่ใส่ ให้คิดตามพื้นที่)
         var inputTrees = parseInt($val("trees")) || 0;
         var trees =
           inputTrees > 0 ? inputTrees : Math.floor(totalLand / areaPerTree);
 
-        // โซนโคนต้น
-        var wantZone = $val("wantZone");
-        var zones = wantZone === "yes" ? parseInt($val("customZones")) || 1 : 1;
+        var enableZone = document.getElementById("enableZone").checked;
+        var zones = enableZone
+          ? Math.min(6, parseInt($val("customZones")) || 1)
+          : 1;
 
-        // ดินและความต้องการน้ำ
+        var soilTypeVal = $val("soilType");
         var soilWaterTable = {
           sand: 40,
           sandy_loam: 35,
@@ -663,9 +775,8 @@
           clay_loam: 24,
           clay: 18,
         };
-        var baseWater = soilWaterTable[$val("soilType")] || 30;
+        var baseWater = soilWaterTable[soilTypeVal] || 30;
 
-        // ผลกระทบสภาพอากาศ
         var weatherMult =
           currentHumidity > 75 ? 0.9 : currentHumidity < 45 ? 1.15 : 1.0;
         var evapRate =
@@ -674,109 +785,304 @@
         var totalWaterDay = Math.round(trees * waterPerTreeDay);
         var totalWaterM3 = (totalWaterDay / 1000).toFixed(2);
 
-        // บ่อน้ำสำรอง 60 วัน
-        var safeCapacity = totalWaterM3 * 60 * (1 + evapRate);
-        var pondSide = Math.round(Math.sqrt(safeCapacity / 3.5));
+        var safeCapacity = totalWaterM3 * 30 * (1 + evapRate);
 
-        // สปริงเกอร์โคนต้น
-        var sprinklerLph = $num("sprinklerFlow");
-        var headsPerTree = parseInt($val("headsPerTree")) || 2;
+        var recommendedDepth = 3.5;
+        var slopeMultiplier = 1.25;
+        var soilSlopeText = "";
+
+        if (soilTypeVal === "clay" || soilTypeVal === "clay_loam") {
+          recommendedDepth = 4.5;
+          slopeMultiplier = 1.1;
+          soilSlopeText = " (ดินเหนียว: แนะนำขุดลึก ~4.5 ม. สโลปชัน 1:0.5)";
+        } else if (soilTypeVal === "sand" || soilTypeVal === "sandy_loam") {
+          recommendedDepth = 3.0;
+          slopeMultiplier = 1.4;
+          soilSlopeText =
+            " (ดินทราย/ร่วนปนทราย: แนะนำขุดลึก ~3.0 ม. ทำสโลปราบกันพัง 1:2)";
+        } else {
+          recommendedDepth = 3.5;
+          slopeMultiplier = 1.25;
+          soilSlopeText = " (ดินร่วน: แนะนำขุดลึก ~3.5 ม. ทำสโลปมาตรฐาน 1:1.5)";
+        }
+
+        var hasExistingPond =
+          document.getElementById("hasExistingPond").checked;
+        var pRai = hasExistingPond ? $num("pondRai") || 0 : 0;
+        var pNgan = hasExistingPond ? $num("pondNgan") || 0 : 0;
+        var pWah = hasExistingPond ? $num("pondWah") || 0 : 0;
+        var existingArea = pRai * 1600 + pNgan * 400 + pWah * 4;
+        var existingDepth = hasExistingPond
+          ? $num("existingPondDepth") || 0
+          : 0;
+
+        if (existingDepth <= 0 || existingArea <= 0) {
+          hasExistingPond = false;
+          existingArea = 0;
+        }
+
+        var existingCapacity = existingArea * existingDepth;
+
+        var basePondSide = Math.sqrt(safeCapacity / recommendedDepth);
+        var topPondSide = basePondSide * slopeMultiplier;
+        var pondArea = topPondSide * topPondSide;
+        var evalPondHtml = "";
+        var actualOccupiedPondArea = pondArea;
+
+        var isPondTooBig = pondArea > totalLand * 0.5;
+        var tankAlternativeHtml = "";
+
+        if (isPondTooBig) {
+          var totalCubicMetersNeeded = Math.ceil(safeCapacity);
+          var recommendedTanks = Math.min(
+            4,
+            Math.max(
+              1,
+              Math.ceil(
+                totalCubicMetersNeeded /
+                  (totalWaterM3 > 0 ? totalWaterM3 * 3 : 1),
+              ),
+            ),
+          );
+          var tankCycles = recommendedTanks > 2 ? 4 : 2;
+
+          tankAlternativeHtml =
+            "<br><div style='background:#fef2f2; border:1px solid #ef4444; padding:10px; border-radius:8px; margin-top:8px; color:#991b1b;'>" +
+            "🚨 <strong>คำเตือนพื้นที่แปลงน้อยเกินไป:</strong> แปลงของคุณมีขนาดเล็ก ไม่เหมาะกับการขุดบ่อดินขนาดใหญ่เพราะจะกินพื้นที่ปลูกพืช<br>" +
+            "💡 <strong>คำแนะนำทางเลือก (ระบบถังสำรองน้ำ):</strong> แนะนำให้ใช้ <strong>ถังเก็บน้ำขนาด 1,000 ลิตร จำนวน " +
+            recommendedTanks +
+            " ถัง</strong> ต่อพ่วงกันสำรองน้ำ และให้แบ่งระบบเปิดรดน้ำเป็น <strong>" +
+            tankCycles +
+            " รอบต่อวัน</strong> เพื่อบริหารปริมาณน้ำจำกัดได้อย่างมีประสิทธิภาพ</div>";
+        }
+
+        if (hasExistingPond && existingArea > 0) {
+          actualOccupiedPondArea = existingArea;
+          if (existingCapacity >= safeCapacity) {
+            var surplus = existingCapacity - safeCapacity;
+            evalPondHtml =
+              "🏊 <strong>การประเมินบ่อน้ำเดิม:</strong> บ่อเดิมขนาด " +
+              pRai +
+              " ไร่ " +
+              pNgan +
+              " งาน " +
+              pWah +
+              " ตร.ว. (ลึก " +
+              existingDepth +
+              " ม. ความจุ " +
+              existingCapacity.toLocaleString() +
+              " คิว) <span style='color:#16a34a;'><strong>เพียงพอปลอดภัยสำหรับแล้ง 30 วัน</strong></span> (เกินพอ +" +
+              surplus.toFixed(1) +
+              " คิว)";
+          } else {
+            var deficit = safeCapacity - existingCapacity;
+            var addBaseSide = Math.sqrt(deficit / recommendedDepth);
+            var addTopSide = addBaseSide * slopeMultiplier;
+            evalPondHtml =
+              "🏊 <strong>การประเมินบ่อน้ำเดิม:</strong> บ่อเดิมจุได้ " +
+              existingCapacity.toLocaleString() +
+              " คิว แต่ระบบต้องการ 30 วันที่ " +
+              safeCapacity.toFixed(1) +
+              " คิว <span style='color:#dc2626;'><strong>(ไม่พอ ขาดอีก " +
+              deficit.toFixed(1) +
+              " คิว)</strong></span><br>👉 <strong>คำแนะนำ:</strong> ควรขุดบ่อเดิมให้ลึกขึ้น หรือขุดบ่อใหม่เสริมขนาดปากบ่อกว้าง ~" +
+              Math.round(addTopSide) +
+              " ม. (ลึก " +
+              recommendedDepth +
+              " ม.)";
+          }
+        } else {
+          actualOccupiedPondArea = pondArea;
+          evalPondHtml =
+            "🏊 <strong>ขนาดบ่อน้ำใหม่ที่แนะนำ (สำรองแล้ง 30 วัน):</strong><br>• ต้องมีความจุอย่างน้อย <strong>" +
+            safeCapacity.toFixed(1) +
+            " คิว</strong> (ปากบ่อกว้าง/ยาว <strong>~" +
+            Math.round(topPondSide) +
+            " ม.</strong> ลึก <strong>" +
+            recommendedDepth +
+            " ม.</strong>)" +
+            soilSlopeText +
+            tankAlternativeHtml;
+        }
+
+        var netLand = Math.max(0, totalLand - actualOccupiedPondArea);
+        var maxTreesAfterPond = Math.floor(netLand / areaPerTree);
+
+        var treeCompareText = "";
+        var displayRaiText = lRai + " ไร่ " + lNgan + " งาน " + lWah + " ตร.ว.";
+        if (inputTrees === 0) {
+          treeCompareText =
+            "สวนขนาด " +
+            displayRaiText +
+            " หักพื้นที่บ่อน้ำ (" +
+            Math.round(actualOccupiedPondArea).toLocaleString() +
+            " ตร.ม.) มีพื้นที่สุทธิปลูกได้ <strong>" +
+            maxTreesAfterPond.toLocaleString() +
+            " ต้น</strong>";
+        } else if (inputTrees < maxTreesAfterPond) {
+          var addMore = maxTreesAfterPond - inputTrees;
+          treeCompareText =
+            "ระบุไว้: <strong>" +
+            inputTrees.toLocaleString() +
+            " ต้น</strong> | พื้นที่หลังหักบ่อน้ำรองรับได้: <strong>" +
+            maxTreesAfterPond.toLocaleString() +
+            " ต้น</strong> <span style='color:#16a34a;'>(สามารถปลูกเพิ่มได้อีก " +
+            addMore.toLocaleString() +
+            " ต้น)</span>";
+        } else if (inputTrees > maxTreesAfterPond) {
+          var removeCount = inputTrees - maxTreesAfterPond;
+          treeCompareText =
+            "ระบุไว้: <strong>" +
+            inputTrees.toLocaleString() +
+            " ต้น</strong> | พื้นที่หลังหักบ่อน้ำรองรับได้: <strong>" +
+            maxTreesAfterPond.toLocaleString() +
+            " ต้น</strong> <span style='color:#dc2626;'>(หนาแน่นเกินไป แนะนำต้องเอาออก " +
+            removeCount.toLocaleString() +
+            " ต้น เพื่อรองรับพื้นที่บ่อน้ำ)</span>";
+        } else {
+          treeCompareText =
+            "ระบุไว้: <strong>" +
+            inputTrees.toLocaleString() +
+            " ต้น</strong> (เหมาะสมพอดีกับพื้นที่แปลงหลังหักบ่อน้ำสำรอง)";
+        }
+
+        var hasBaseSprinkler =
+          document.getElementById("hasBaseSprinkler").checked;
+        var sprinklerLph = 150,
+          headsPerTree = 2,
+          sprinklerEvalText = "";
+
+        if (hasBaseSprinkler) {
+          sprinklerLph = $num("customSprinklerFlow") || 150;
+          headsPerTree = parseInt($val("headsPerTree")) || 2;
+          sprinklerEvalText =
+            "⚙️ <strong>หัวสปริงเกอร์โคนต้นที่ระบุเอง:</strong> ขนาด <strong>" +
+            sprinklerLph +
+            " ลิตร/ชม.</strong> จำนวน <strong>" +
+            headsPerTree +
+            " หัว/ต้น</strong>";
+        } else {
+          if (soilTypeVal === "clay" || soilTypeVal === "clay_loam") {
+            sprinklerLph = 60;
+            headsPerTree = 2;
+            sprinklerEvalText =
+              "💡 <strong>หัวสปริงเกอร์โคนต้น (แนะนำตามชนิดดิน):</strong> ดินเหนียวซึมน้ำช้า แนะนำใช้ <strong>หัวสปริงเกอร์แบบเป็นหยด (60 ลิตร/ชม.) จำนวน 2 หัว/ต้น</strong> (ป้องกันน้ำขังหน้าดิน)";
+          } else {
+            sprinklerLph = 100;
+            headsPerTree = 2;
+            sprinklerEvalText =
+              "💡 <strong>หัวสปริงเกอร์โคนต้น (แนะนำตามชนิดดิน):</strong> ดินร่วน/ทรายซึมไว แนะนำใช้ <strong>หัวสปริงเกอร์แบบฝอย (100 ลิตร/ชม.) จำนวน 2 หัว/ต้น</strong> (กระจายวงน้ำให้กว้าง)";
+          }
+        }
+
+        var waterCycles =
+          parseInt(document.getElementById("waterCycles").value) || 2;
+        var waterPerCycle = waterPerTreeDay / waterCycles;
+
         var totalTreeFlowLph = sprinklerLph * headsPerTree;
         var runMinutes = Math.max(
           1,
-          Math.round((waterPerTreeDay / totalTreeFlowLph) * 60),
+          Math.round((waterPerCycle / totalTreeFlowLph) * 60),
         );
 
-        // คำนวณปั๊มโคนต้น
-        var pipeLength = (gardenL + gardenW) / 2;
-        var headBase = 20 + elevation + pipeLength * 0.05; // 20m แรงดันหัวสปริงเกอร์
+        var maxPipeLength = Math.max(gardenW, gardenL);
+        var frictionLoss = maxPipeLength * 0.05;
+        var headBaseRaw = 20 + elevation + frictionLoss;
+        var headBase = headBaseRaw * 1.2;
+
         var flowBaseLpm = ((trees / zones) * headsPerTree * sprinklerLph) / 60;
-        var pumpHpBase = getStandardHp(
-          (flowBaseLpm * headBase) / (4500 * 0.65),
-        );
+        var pumpHpBase = getStandardHp((flowBaseLpm * headBase) / 2925);
 
-        // แสดงผล KPI
         document.getElementById("kpiWater").innerText = totalWaterM3;
         document.getElementById("kpiWaterLiter").innerText =
           totalWaterDay.toLocaleString();
         document.getElementById("kpiHp").innerText = pumpHpBase;
         document.getElementById("kpiFlow").innerText = Math.round(flowBaseLpm);
-        document.getElementById("kpiPond").innerText = safeCapacity.toFixed(1);
 
-        // ประเมินต้นและรอบเวลา
+        if (hasExistingPond && existingArea > 0) {
+          document.getElementById("kpiPondTitle").innerText =
+            "🏊 ความจุบ่อเดิม";
+          document.getElementById("kpiPond").innerText =
+            existingCapacity.toLocaleString();
+          document.getElementById("kpiPondSub").innerText =
+            "คิว (ต้องการ " + safeCapacity.toFixed(1) + " คิว)";
+        } else {
+          document.getElementById("kpiPondTitle").innerText =
+            "🏊 บ่อน้ำแนะนำ 30 วัน";
+          document.getElementById("kpiPond").innerText =
+            safeCapacity.toFixed(1);
+          document.getElementById("kpiPondSub").innerText =
+            "คิว (ปากบ่อ ~" +
+            Math.round(topPondSide) +
+            "×" +
+            Math.round(topPondSide) +
+            " ม.)";
+        }
+
         document.getElementById("evalTree").innerHTML =
-          "🌱 <strong>ผังการปลูก:</strong> สวน " +
-          rai +
-          " ไร่ มีทุเรียน <strong>" +
-          trees.toLocaleString() +
-          " ต้น</strong> (ระยะ " +
+          "🌱 <strong>ผังการปลูก:</strong> " +
+          treeCompareText +
+          "<br><span class='subtext'>(ระยะ " +
           spacingW +
           "×" +
           spacingL +
-          " ม.)";
+          " ม. | บ่อน้ำใช้พื้นที่ ~" +
+          Math.round(actualOccupiedPondArea).toLocaleString() +
+          " ตร.ม.)</span>";
+        document.getElementById("evalSprinkler").innerHTML = sprinklerEvalText;
         document.getElementById("evalSchedule").innerHTML =
           "⏱️ <strong>รอบรดน้ำโคนต้น:</strong> " +
           (zones === 1 ? "ทั้งแปลง" : "โซนละ") +
           " <strong>" +
           runMinutes +
-          " นาที/วัน</strong> (แบ่ง " +
+          " นาที/รอบ</strong> | เปิดวันละ <strong>" +
+          waterCycles +
+          " รอบ</strong> (แบ่ง " +
           zones +
           " โซน)";
+        document.getElementById("evalPond").innerHTML = evalPondHtml;
 
-        // ระบบสปริงเกอร์บนยอด
         var enableCanopy = document.getElementById("enableCanopy").checked;
         var canopyBox = document.getElementById("evalCanopy");
         var pumpHpCanopy = 0,
           flowCanopyLpm = 0,
-          canopyTotalHead = 0;
+          canopyTotalHead = 0,
+          totalCanopyHeads = 0;
 
         if (enableCanopy) {
           var treeHeight = $num("treeHeight");
           var canopyOpt =
             document.getElementById("canopyFlow").selectedOptions[0];
           var canopyLph = parseFloat(canopyOpt.value);
-          var canopyRadius =
-            parseFloat(canopyOpt.getAttribute("data-radius")) || 4.0;
           var canopyZones = parseInt($val("canopyZones")) || 2;
 
-          // รัศมีพุ่มประมาณ 50% ของความสูง
-          var treeRadius = Math.min(
-            treeHeight * 0.5,
-            Math.min(spacingW, spacingL) / 2,
-          );
-          var canopyHeads = Math.max(
-            1,
-            Math.ceil(
-              (Math.PI * treeRadius * treeRadius) /
-                (Math.PI * canopyRadius * canopyRadius),
-            ),
-          );
+          totalCanopyHeads = Math.ceil(trees / 4);
+          var canopyHeadsPerZone = totalCanopyHeads / canopyZones;
 
-          canopyTotalHead = headBase + treeHeight;
-          flowCanopyLpm =
-            ((trees / canopyZones) * canopyHeads * canopyLph) / 60;
+          canopyTotalHead = (20 + elevation + frictionLoss + treeHeight) * 1.2;
+          flowCanopyLpm = (canopyHeadsPerZone * canopyLph) / 60;
+
           pumpHpCanopy = getStandardHp(
-            (flowCanopyLpm * canopyTotalHead) / (4500 * 0.65),
+            (flowCanopyLpm * canopyTotalHead) / 2925,
           );
 
           canopyBox.style.display = "block";
           canopyBox.innerHTML =
-            "❄️ <strong>ระบบบนยอดลดความร้อน:</strong> รัศมีพุ่ม ~" +
-            treeRadius.toFixed(1) +
-            " ม. --> ติดตั้ง <strong>" +
-            canopyHeads +
-            " หัว/ต้น</strong> | แบ่ง " +
+            "❄️ <strong>ระบบบนยอดลดความร้อน (1 หัว / 4 ต้น):</strong> ติดตั้งรวม <strong>" +
+            totalCanopyHeads.toLocaleString() +
+            " หัว</strong> | แบ่ง " +
             canopyZones +
-            " โซน (ต้องการปั๊ม <strong>" +
+            " โซน<br>• ต้องการปั๊ม: <strong>" +
             pumpHpCanopy +
-            " HP</strong>, อัตราไหล " +
+            " HP</strong> (อัตราไหล " +
             Math.round(flowCanopyLpm) +
-            " ลิตร/นาที)";
+            " ลิตร/นาที | TDH " +
+            canopyTotalHead.toFixed(1) +
+            " ม. รวมเผื่อ 20%)";
         } else {
           canopyBox.style.display = "none";
         }
 
-        // ประเมินปั๊มเดิม
         var currentHp = $num("currentHp");
         var hpText = "";
         if (currentHp === 0) {
@@ -787,7 +1093,7 @@
             (enableCanopy
               ? " | ระบบยอดใช้ <strong>" +
                 pumpHpCanopy +
-                " HP</strong> (ซื้อปั๊มตัวเดียวเลือกขนาด " +
+                " HP</strong> (ซื้อตัวเดียวเลือกขนาด " +
                 Math.max(pumpHpBase, pumpHpCanopy) +
                 " HP)"
               : "");
@@ -807,34 +1113,10 @@
               pumpHpBase +
               " HP" +
               (enableCanopy ? ", ยอดต้องการ " + pumpHpCanopy + " HP" : "") +
-              ") แนะนำเพิ่มโซนหรือเปลี่ยนปั๊ม";
+              ")";
         }
         document.getElementById("evalPump").innerHTML = hpText;
 
-        // รายละเอียดสูตร
-        var mathHtml = `
-          <strong>1. มิติแปลงและจำนวนต้น:</strong><br>
-          • พื้นที่: ${rai} ไร่ × 1,600 = ${totalLand.toLocaleString()} ตร.ม. --> ได้ ${trees} ต้น<br><br>
-          <strong>2. ความต้องการน้ำ (ความชื้น ${currentHumidity}%):</strong><br>
-          • น้ำต่อต้น: ${baseWater} × ${weatherMult} = ${waterPerTreeDay.toFixed(1)} ลิตร/วัน --> รวมทั้งสวน ${totalWaterDay.toLocaleString()} ลิตร (${totalWaterM3} คิว)<br><br>
-          <strong>3. บ่อน้ำสำรอง 60 วัน (เผื่อระเหย ${evapRate * 100}%):</strong><br>
-          • ความจุ: ${safeCapacity.toFixed(1)} คิว --> บ่อลึก 3.5 ม. กว้างประมาณ ~${pondSide} × ${pondSide} ม.<br><br>
-          <strong>4. กำลังปั๊มโคนต้น (แบ่ง ${zones} โซน):</strong><br>
-          • <strong>อัตราไหลของโซน (Q):</strong><br><span class="code-tag">${Math.round(flowBaseLpm)} ลิตร/นาที</span><br>
-          • <strong>แรงดันสูญเสียรวม (TDH):</strong><br><span class="code-tag">${headBase.toFixed(1)} เมตร</span><br>
-          • คำนวณแรงม้า: (${flowBaseLpm.toFixed(1)} × ${headBase.toFixed(1)}) ÷ 2925 = ${((flowBaseLpm * headBase) / 2925).toFixed(2)} HP --> <strong>ขนาดตลาด: ${pumpHpBase} HP</strong>
-        `;
-
-        if (enableCanopy) {
-          mathHtml += `
-            <br><br><strong>5. กำลังปั๊มระบบยอด (ความสูงต้น ${$num("treeHeight")} ม. | แบ่ง ${$val("canopyZones")} โซน):</strong><br>
-            • <strong>อัตราไหลระบบยอด (Q):</strong><br><span class="code-tag">${Math.round(flowCanopyLpm)} ลิตร/นาที</span><br>
-            • <strong>แรงดันสูญเสียรวม (TDH):</strong><br><span class="code-tag">${canopyTotalHead.toFixed(1)} เมตร</span><br>
-            • คำนวณแรงม้า: (${flowCanopyLpm.toFixed(1)} × ${canopyTotalHead.toFixed(1)}) ÷ 2925 = ${((flowCanopyLpm * canopyTotalHead) / 2925).toFixed(2)} HP --> <strong>ขนาดตลาด: ${pumpHpCanopy} HP</strong>
-          `;
-        }
-
-        document.getElementById("mathBox").innerHTML = mathHtml;
         document.getElementById("resultBox").style.display = "block";
         document
           .getElementById("resultBox")
