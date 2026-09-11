@@ -123,6 +123,23 @@
         color: #64748b;
         font-size: 12px;
       }
+
+      /* สไตล์สำหรับกล่องรูปภาพตัวอย่างเนมเพลตปั๊ม */
+      .pump-img-box {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 12px;
+        text-align: center;
+      }
+
+      .pump-img-box img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
     </style>
   </head>
   <body>
@@ -187,6 +204,14 @@
           <input type="number" id="customZones" min="0" max="6" placeholder="ระบุจำนวนไม่เกิน 6" />
         </div>
 
+        <!-- เพิ่มรูปเนมเพลตปั๊มน้ำไว้ด้านบนข้อ 7 -->
+        <div class="pump-img-box">
+          <img src="สกรีนช็อต 2026-09-11 224708.png" alt="ป้ายสเปกปั๊มน้ำ (Nameplate)" />
+          <div class="subtext" style="margin-top: 6px; color: #0284c7;">
+            💡 ตัวอย่างป้ายปั๊ม: ดูที่ช่อง <strong>P2 1.5 kW</strong> หรือรหัสรุ่น <strong>KTZ21.5</strong> = <strong>2 แรงม้า (HP)</strong>
+          </div>
+        </div>
+
         <div class="form-group">
           <label for="currentHp">
             7. กำลังปั๊มน้ำเดิมที่มี (HP,แรง)
@@ -246,11 +271,9 @@
     </div>
 
     <script>
-      // กำหนดตัวแปรค่าความชื้นเริ่มต้นไว้ก่อน เผื่อเน็ตหลุดหรือไม่ได้เปิด GPS
       var currentHumidity = 60;
       var currentTemp = 30;
 
-      // ฟังก์ชันเปิด-ปิด หรือเคลียร์ช่องกรอกจำนวนโซน
       function toggleZoneInput() {
         var want = document.getElementById("wantZone").value;
         var inputZone = document.getElementById("customZones");
@@ -265,14 +288,11 @@
         }
       }
 
-      // // จุดยาก: แปลงนาทีให้กลายเป็นชั่วโมงกับนาที (ถ้าเกิน 60 นาที)
       function formatMinutes(totalMins) {
         if (totalMins < 60) {
           return totalMins + " นาที";
         }
-        // // Math.floor คือการหารแล้วตัดเศษทิ้งเพื่อเอาแต่จำนวนเต็มชั่วโมง
         var hours = Math.floor(totalMins / 60);
-        // // เครื่องหมาย % (Modulus) คือการหารเอาเศษที่เหลือออกมาเป็นนาที
         var mins = totalMins % 60;
         if (mins == 0) {
           return hours + " ชั่วโมง";
@@ -280,38 +300,33 @@
         return hours + " ชม. " + mins + " นาที";
       }
 
-      // // จุดยาก: ปัดเศษแรงม้าให้ตรงกับขนาดปั๊มที่มีขายตามร้านทั่วไป
       function getStandardMarketHp(hp) {
         var marketList = [1, 1.5, 2, 3, 5, 7.5, 10, 15, 20, 25, 30];
         for (var i = 0; i < marketList.length; i++) {
           if (hp <= marketList[i]) {
-            return marketList[i]; // เจอปั๊มตัวแรกที่ใหญ่กว่าหรือเท่ากับ ให้เอาตัวนั้นเลย
+            return marketList[i];
           }
         }
-        return Math.ceil(hp); // ถ้าใหญ่เกินรายการ ให้ปัดเศษขึ้น
+        return Math.ceil(hp);
       }
 
-      // // จุดยาก: ดึงพิกัดจากดาวเทียมในมือถือ/คอม (Geolocation) แล้วส่งไปถามเว็บพยากรณ์อากาศ
       function getGPSAndWeather() {
         var display = document.getElementById("weatherDisplay");
 
-        // เช็คว่าเครื่องรองรับ GPS หรือไม่
         if (!navigator.geolocation) {
           display.innerHTML = "เครื่องไม่รองรับ GPS (ใช้ค่าความชื้น 60% แทน)";
           return;
         }
 
-        // // คำสั่งเปิด GPS เพื่อหาพิกัด ละติจูด ลองจิจูด
         navigator.geolocation.getCurrentPosition(function (position) {
           var lat = position.coords.latitude.toFixed(4);
           var lon = position.coords.longitude.toFixed(4);
 
-          // // จุดยาก: ใช้ fetch เพื่อไปโหลดข้อมูลสภาพอากาศแบบสดๆ มาจากเว็บ open-meteo
           var apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&current=temperature_2m,relative_humidity_2m";
 
           fetch(apiUrl)
             .then(function (res) {
-              return res.json(); // แปลงผลลัพธ์เป็น JSON
+              return res.json();
             })
             .then(function (data) {
               currentTemp = data.current.temperature_2m;
@@ -326,16 +341,13 @@
         });
       }
 
-      // สั่งให้ดึง GPS ทันทีที่เปิดหน้าเว็บ
       window.onload = function () {
         getGPSAndWeather();
       };
 
-      // เมื่อกดปุ่ม "คำนวณผลลัพธ์"
       document.getElementById("waterCalcForm").onsubmit = function (e) {
-        e.preventDefault(); // สั่งไม่ให้หน้ารีเฟรชตอนกดปุ่ม
+        e.preventDefault();
 
-        // ดึงค่าที่คนกรอกจากหน้าจอมาเก็บในตัวแปร
         var rai = parseInt(document.getElementById("rai").value);
         var gardenW = parseFloat(document.getElementById("gardenW").value);
         var gardenL = parseFloat(document.getElementById("gardenL").value);
@@ -349,10 +361,9 @@
         var soilType = soilSelect.value;
         var soilName = soilSelect.options[soilSelect.selectedIndex].text;
 
-        // เช็คการแบ่งโซน
         var wantZone = document.getElementById("wantZone").value;
         var zoneBoxVal = document.getElementById("customZones").value;
-        var zones = 1; // ตั้งค่าเริ่มต้นไว้ที่ 1 โซน (เปิดหมด)
+        var zones = 1;
 
         if (wantZone == "yes" && zoneBoxVal != "" && parseInt(zoneBoxVal) > 0) {
           zones = parseInt(zoneBoxVal);
@@ -363,7 +374,6 @@
           return;
         }
 
-        // แสดงสรุปข้อมูลที่กรอกลงไปในกล่องสีขาว
         var summaryBox = document.getElementById("inputDataSummary");
         var zoneText = "แบ่ง " + zones + " โซน";
         if (zones == 1) {
@@ -385,8 +395,7 @@
           "<li><strong>ชนิดดิน:</strong> " + soilName + "</li>" +
           "</ul>";
 
-        // กำหนดการกินน้ำของพืชตามดินแต่ละชนิด (ลิตร/ต้น/วัน)
-        var waterPerTree = 30; // ดินร่วนปกติ
+        var waterPerTree = 30;
         if (soilType == "sand") waterPerTree = 40;
         else if (soilType == "loamy_sand") waterPerTree = 38;
         else if (soilType == "sandy_loam") waterPerTree = 35;
@@ -400,7 +409,6 @@
         else if (soilType == "silty_clay") waterPerTree = 20;
         else if (soilType == "clay") waterPerTree = 18;
 
-        // คำนวณความถี่การรดน้ำ (รอบ/วัน)
         var cycles = 1;
         var cycleReason = "เนื้อดินอุ้มน้ำได้ดี แนะนำให้รดวันละ 1 รอบตอนเช้า";
         if (soilType == "sand" || soilType == "loamy_sand" || currentHumidity < 40) {
@@ -408,37 +416,32 @@
           cycleReason = "ดินระบายน้ำไวมากหรืออากาศแห้ง แนะนำรดวันละ 2 รอบ เพื่อไม่ให้น้ำซึมทิ้ง";
         }
 
-        // ปรับน้ำตามความชื้นสัมพัทธ์ในอากาศ
-        var evapRate = 0.20; // บ่อระเหยมาตรฐาน 20%
+        var evapRate = 0.20;
         var plantMultiply = 1.0;
         var weatherNote = "*ความชื้นปกติ (" + currentHumidity + "%) ใช้น้ำตามเกณฑ์มาตรฐาน";
 
         if (currentHumidity < 45) {
           evapRate = 0.30;
-          plantMultiply = 1.15; // อากาศแห้ง พืชกินน้ำเยอะขึ้น 15%
+          plantMultiply = 1.15;
           weatherNote = "*อากาศแห้งมาก (ความชื้น " + currentHumidity + "%) พืชจะคายน้ำเยอะขึ้น 15% และบ่อจะระเหย 30%";
         } else if (currentHumidity > 75) {
           evapRate = 0.15;
-          plantMultiply = 0.90; // ชื้นสูง พืชกินน้ำน้อยลง 10%
+          plantMultiply = 0.90;
           weatherNote = "*ความชื้นสูง (" + currentHumidity + "%) ลดการสูญเสียระเหยลงเหลือ 15%";
         }
 
-        // 1. คำนวณปริมาณน้ำรายวัน
         var dailyWaterTotal = Math.round(trees * (waterPerTree * plantMultiply));
-        var dailyWaterM3 = (dailyWaterTotal / 1000).toFixed(2); // แปลงลิตรเป็นคิว (หาร 1000)
+        var dailyWaterM3 = (dailyWaterTotal / 1000).toFixed(2);
 
-        // 2. คำนวณขนาดบ่อน้ำสำรองเผื่อแล้ง 60 วัน (2 เดือน)
         var safeCapacity = dailyWaterM3 * 60 * (1 + evapRate);
-        var pondDepth = 3.5; // ขุดลึก 3.5 เมตร
-        // // Math.sqrt คือการถอดรากที่สอง (Square Root) เพื่อหากว้าง x ยาว ของบ่อทรงสี่เหลี่ยมจัตุรัส
+        var pondDepth = 3.5;
         var pondSide = Math.round(Math.sqrt(safeCapacity / pondDepth));
-        var pondArea = pondSide * pondSide; // พื้นที่ผิวน้ำ
+        var pondArea = pondSide * pondSide;
 
-        // 3. ตรวจสอบพื้นที่ปลูกกับจำนวนต้น
-        var totalLandArea = rai * 1600; // 1 ไร่ = 1,600 ตารางเมตร
-        var netArea = totalLandArea - pondArea; // พื้นที่ที่เหลือหลังหักบ่อ
+        var totalLandArea = rai * 1600;
+        var netArea = totalLandArea - pondArea;
         var areaPerTree = spacingW * spacingL;
-        var maxTrees = Math.floor(netArea / areaPerTree); // จำนวนต้นที่ดินรองรับได้จริง
+        var maxTrees = Math.floor(netArea / areaPerTree);
 
         var areaBox = document.getElementById("areaTreeEvaluation");
         if (trees == maxTrees) {
@@ -449,13 +452,11 @@
           areaBox.innerHTML = "🌱 <strong>การจัดวางต้นไม้:</strong> <span style='color:blue; font-weight:bold;'>โปร่งสบาย</span><br>ปลูกจริง " + trees + " ต้น (แปลงนี้รองรับได้มากถึง " + maxTrees + " ต้น)";
         }
 
-        // 4. คำนวณเวลาการรดน้ำ
         var totalHours = 3.5;
         if (zones == 1) {
           totalHours = 2.5;
         }
         var totalMinutes = totalHours * 60;
-        // // จุดยาก: นำเวลาทั้งหมดมาหารกระจายให้แต่ละโซน และแบ่งตามจำนวนรอบ
         var minutesPerZone = Math.round((totalMinutes / zones) / cycles);
         var timeFormatted = formatMinutes(minutesPerZone);
 
@@ -470,20 +471,15 @@
           "• <strong>ความถี่:</strong> รดวันละ <strong>" + cycles + " ครั้ง</strong> (" + cycleReason + ")<br>" +
           "• <strong>ระยะเวลาเปิด:</strong> <strong>" + zoneNameText + " " + timeFormatted + "</strong> ต่อรอบ";
 
-        // // 5. จุดยาก: คำนวณ Head รวม (TDH) = แรงดันสปริงเกลอร์ + ความสูงเนิน + ท่อเสียดทาน
-        var pipeLength = (gardenL / 2) + (gardenW / 2); // ประมาณความยาวท่อส่ง
-        var pipeFriction = pipeLength * 0.05; // คิดแรงเสียดทานในท่อ 5%
-        var sprinklerHead = 20; // หัวสปริงเกลอร์กินแรงดัน 20 เมตร (2 บาร์)
+        var pipeLength = (gardenL / 2) + (gardenW / 2);
+        var pipeFriction = pipeLength * 0.05;
+        var sprinklerHead = 20;
         var totalHead = sprinklerHead + elevation + pipeFriction;
 
-        // คำนวณอัตราการไหล (ลิตรต่อนาที) สำหรับแต่ละโซน
         var flowRateLpm = (dailyWaterTotal / zones) / (minutesPerZone * cycles);
-
-        // // สูตรวิศวกรรมคำนวณแรงม้า: (Q * H) / (4500 * ประสิทธิภาพปั๊ม 0.65)
         var rawHp = (flowRateLpm * totalHead) / (4500 * 0.65);
         var pumpHp = getStandardMarketHp(rawHp);
 
-        // นำค่าไปใส่ในกล่องผลลัพธ์
         document.getElementById("dailyWater").innerText = dailyWaterTotal.toLocaleString();
         document.getElementById("dailyWaterM3").innerText = dailyWaterM3;
         document.getElementById("evapClimateNote").innerText = weatherNote;
@@ -492,7 +488,6 @@
         document.getElementById("pondDim").innerText = "*ขนาดบ่อแนะนำ: กว้าง ~" + pondSide + " ม. × ยาว ~" + pondSide + " ม. ลึก " + pondDepth + " ม.";
         document.getElementById("recommendedHp").innerText = pumpHp;
 
-        // เปรียบเทียบกับปั๊มเดิม
         var hpBox = document.getElementById("hpEvaluation");
         if (currentHp == 0) {
           hpBox.innerHTML = "<span style='color:blue;'>ℹ️ แนะนำให้ซื้อปั๊มใหม่ขนาด <strong>" + pumpHp + " HP</strong></span>";
@@ -502,7 +497,6 @@
           hpBox.innerHTML = "<span style='color:red;'>⚠️ ปั๊มเดิม (" + currentHp + " HP) แรงดันไม่พอ (ต้องใช้ " + pumpHp + " HP) แนะนำเปลี่ยนปั๊มหรือเพิ่มโซนรดน้ำ</span>";
         }
 
-        // สั่งให้กล่องผลลัพธ์โชว์ขึ้นมาบนหน้าจอ
         document.getElementById("resultBox").style.display = "block";
       };
     </script>
